@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Golf Swing Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Golf Swing Analytics Dashboard</h1>
+      <div class="date-range">Last updated: <span id="update-date">Today</span></div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Summary Metrics -->
+      <div class="card card-small">
+        <div class="card-header">
+          <div class="card-title">Average Head Speed</div>
+        </div>
+        <div class="metric" id="avg-head-speed">0</div>
+        <div class="metric-label">mph</div>
+      </div>
+
+      <div class="card card-small">
+        <div class="card-header">
+          <div class="card-title">Average Face Angle</div>
+        </div>
+        <div class="metric" id="avg-face-angle">0</div>
+        <div class="metric-label">degrees</div>
+      </div>
+
+      <div class="card card-small">
+        <div class="card-header">
+          <div class="card-title">Average Carry</div>
+        </div>
+        <div class="metric" id="avg-carry">0</div>
+        <div class="metric-label">yards</div>
+      </div>
+
+      <!-- Charts -->
+      <div class="card card-large">
+        <div class="card-header">
+          <div class="card-title">Swing Metrics Comparison</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="swing-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card card-medium">
+        <div class="card-header">
+          <div class="card-title">Head Speed vs Carry</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="correlation-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="card card-full">
+        <div class="card-header">
+          <div class="card-title">Swing Data Analysis</div>
+          <button class="btn" id="refresh-data">Refresh Data</button>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Swing #</th>
+              <th>Head Speed</th>
+              <th>Face Angle</th>
+              <th>Attack Angle</th>
+              <th>Carry</th>
+            </tr>
+          </thead>
+          <tbody id="data-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
