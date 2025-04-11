@@ -122,16 +122,16 @@ body {
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
+  gap: 10px;
   margin-bottom: 24px;
 }
 
 .card {
   background-color: var(--bg-card);
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  height: 80px;
+  height: 70px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -183,7 +183,7 @@ body {
   border-collapse: collapse;
   font-size: 14px;
   background-color: var(--bg-card);
-  border-radius: 6px;
+  border-radius: 4px;
   overflow: hidden;
   margin-bottom: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -191,7 +191,7 @@ body {
 
 .data-table th,
 .data-table td {
-  padding: 8px 10px;
+  padding: 8px 8px;
   text-align: right;
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap; /* テキストの折り返しを防止 */
@@ -205,7 +205,7 @@ body {
 .data-table th {
   background-color: var(--table-header-bg);
   color: var(--text-primary);
-  font-weight: 400;
+  font-weight: 300;
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 0.5px;
@@ -249,7 +249,7 @@ body {
   overflow-x: auto;
   max-width: 100%;
   margin-bottom: 10px;
-  border-radius: 6px;
+  border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -259,8 +259,8 @@ body {
 .pagination {
   display: flex;
   justify-content: center;
-  gap: 5px;
-  margin-top: 15px;
+  gap: 6px;
+  margin-top: 2px;
   flex-wrap: wrap; /* 必要に応じて折り返し */
 }
 
@@ -311,7 +311,7 @@ body {
 }
 
 .metric {
-  font-size: 36px;
+  font-size: 32px;
   margin: 0;
   line-height: 1.1;
   font-weight: 400;
@@ -343,7 +343,7 @@ body {
   padding: 8px 14px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-family: 'Oswald', sans-serif;
   font-weight: 500;
   text-transform: uppercase;
@@ -374,7 +374,7 @@ body {
 /* スイングタイプセクション用スタイル */
 .swing-type-section {
   margin-top: 10px;
-  margin-bottom: 30px;
+  margin-bottom: 0px;
 }
 
 /* スイングタイプセレクター */
@@ -390,7 +390,7 @@ body {
   border: 1px solid var(--border-color);
   padding: 12px 15px;
   font-size: 14px;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-family: 'Oswald', sans-serif;
   appearance: none;
@@ -416,7 +416,7 @@ body {
 /* スイングタイプ情報コンテナ */
 .swing-type-info-container {
   background-color: var(--bg-card);
-  border-radius: 6px;
+  border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -449,7 +449,7 @@ body {
 }
 
 .info-value {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
 }
@@ -457,8 +457,8 @@ body {
 /* スイング概要 */
 .swing-description {
   padding: 10px;
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1;
   color: var(--text-primary);
   background-color: var(--bg-card);
   border-top: 1px solid var(--border-color);
@@ -482,7 +482,7 @@ margin: 4 0 0 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-    margin-top: 10px; /* ← ここ追加 */
+    margin-top: 4px; /* ← ここ追加 */
   grid-template-columns: repeat(5, 1fr);
   gap: 2px;
   background-color: var(--bg-dark);
@@ -492,10 +492,10 @@ margin: 4 0 0 0;
   background-color: var(--bg-card);
   padding: 16px 10px; /* ← 上下に余裕を！ */
   text-align: center;
-  min-width: 160px;
-  flex: 1;
-  border-radius: 6px;
-    margin: 12px 0; /* ← 上下の空間を追加！ */
+  min-width: 100px;
+    /* flex: 1;*/ /* ← コメントアウト または 行ごと削除 */
+  border-radius: 4px;
+    margin: 10px 0; /* ← 上下の空間を追加！ */
 }
 
 .metric-label {
@@ -503,7 +503,7 @@ margin: 4 0 0 0;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 5px;
+  margin-bottom: px;
 }
 
 .metric-value {
@@ -550,10 +550,47 @@ margin: 4 0 0 0;
 }
 
 /* ============================== */
+/* 計測数値表示グリッド (新規追加) */
+/* ============================== */
+.measured-values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: 15px;
+}
+
+/* measured-values-grid 内の metric-box スタイル */
+.measured-values-grid .metric-box {
+  /* ▼▼▼ コメントを解除し、必要なスタイルを記述 ▼▼▼ */
+  background-color: var(--bg-card); /* 背景色 */
+  padding: 8px 10px;               /* 内側の余白 (上下8px, 左右10px) */
+  border-radius: 4px;              /* 角丸 */
+  text-align: center;              /* 文字中央揃え */
+  /* min-height: 60px; */         /* 最小高さ (必要ならコメント解除) */
+  max-width: 200px;                /* ★★★ 最大幅を設定 (例: 200px) ★★★ */
+  /* width: 100%; */              /* width: 100% は指定しない */
+  /* flex: 1; */                   /* flex: 1 も指定しない */
+  /* ▲▲▲ ここまで ▲▲▲ */
+}
+
+.measured-values-grid .metric-box .label {
+   /* 既存の .metric-box .label スタイル適用確認 */
+   /* font-size: 10px; */
+   /* ... */
+}
+
+.measured-values-grid .metric-box .value {
+   /* 既存の .metric-box .value スタイル適用確認 */
+   /* font-size: 24px; ← 数値の大きさ */
+   /* ... */
+   line-height: 1.2; /* 行間を少し詰める */
+}
+
+/* ============================== */
 /* モデルとメトリックボックス       */
 /* ============================== */
 .swing-model-section {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .model-info {
@@ -572,26 +609,26 @@ margin: 4 0 0 0;
 
 .model-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-top: 15px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .metric-box {
   background-color: var(--bg-card);
-  padding: 10px;
+  padding: 2px;
   border-radius: 4px;
   text-align: center;
 }
 
 .metric-box .value {
-  font-size: 32px;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 300;
   margin: 0px 0;
 }
 
 .metric-box .label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary);
   text-transform: uppercase;
 }
@@ -660,7 +697,7 @@ margin: 4 0 0 0;
   flex: 1;
   min-width: 150px; /* 幅が小さすぎないように */
   background-color: #1e1e2f;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 1rem;
   text-align: center;
 }
