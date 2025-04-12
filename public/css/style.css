@@ -725,7 +725,7 @@ margin: 4 0 0 0;
 /* 各列の幅を指定 (合計100%になるように調整) */
 .detailed-analysis-section .data-table th:nth-child(1),
 .detailed-analysis-section .data-table td:nth-child(1) {
-  width: 10%; /* 1列目: 指標名 (広めに) */
+  width: 20%; /* 1列目: 指標名 (広めに) */
   text-align: left !important; /* 左揃えを強制 */
    overflow-wrap: break-word; /* 長い場合に折り返す */
    word-break: break-all; /* 必要なら単語の途中でも改行 */
