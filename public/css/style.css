@@ -767,11 +767,11 @@ margin: 4 0 0 0;
 
 .swing-type-metric-box {
   background-color: var(--bg-card);
-  padding: 16px 10px;
+  padding: 4px 10px;
   text-align: center;
   min-width: 100px;
   border-radius: 4px;
-  margin: 10px 0; /* 上下の空間 */
+  margin: 6px 0; /* 上下の空間 */
   flex: 1; /* 横幅を均等割り付け */
   min-width: 120px; /* 最小幅 */
 }
@@ -796,7 +796,7 @@ margin: 4 0 0 0;
   /* 画面幅に応じて列数を自動調整 */
   /* minmax(150px, 1fr): 各列の最小幅は150px、最大は利用可能なスペースを均等分割 */
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px; /* カード間の隙間 */
+  gap: 8px; /* カード間の隙間 */
 }
 
 /* 各数値カードのスタイル */
@@ -806,7 +806,7 @@ margin: 4 0 0 0;
   padding: 10px 12px;              /* 内側の余白 */
   text-align: center;              /* 文字中央揃え */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* 軽い影 */
-  min-height: 65px; /* カードの高さをある程度揃える */
+  min-height: 40px; /* カードの高さをある程度揃える */
   display: flex; /* ラベルと値を縦に並べるため */
   flex-direction: column;
   justify-content: center; /* 上下中央揃え */
@@ -865,4 +865,16 @@ padding-bottom: 15px;
 /*   ヘッダーと最初のコンテンツ（ユーザーステータス）が */
 /*   重なってしまう場合などに調整してください。 */
 /*   まずはこのコメントアウトのままで試してみてください。 */
+
+
+/* ============================== */
+/* 判定結果の説明文スタイル調整   */
+/* ============================== */
+#judged-swing-description {
+  font-size: 20px; /* ★★★ ここの数値を調整してください ★★★ */
+                   /* 例: 18px や 1.2em など */
+  /* 他にも調整したいスタイルがあればここに追加 */
+  /* 例: color: #e2e8f0; (少し明るい白) */
+  /* 例: margin-bottom: 30px; (下の余白を増やす) */
+}
 
