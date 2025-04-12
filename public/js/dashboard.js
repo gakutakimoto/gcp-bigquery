@@ -6,26 +6,49 @@ let currentPage = 1;   // テーブルの現在のページ番号
 const rowsPerPage = 8; // テーブルの1ページあたりの行数
 let metricsDataLoaded = false; // APIから指標中央値が読み込まれたかのフラグ
 let thresholdData = []; // クラスタ判定の閾値データ
+let clusterAnalysisData = {}; // クラスタ別分析データ (読み込み後に格納)
+let currentRandomSwingData = null; // 最新のランダムスイングデータ
+let successMediansData = {}; // クラスタ別成功中央値データ
 
-// スイングタイプに関する静的データ (判定結果表示やドロップダウンに使用)
+// スイングタイプに関する静的データ (基本情報のみ)
 const swingTypeData = [
-  { id: 0, Club_Type: "ドライバー", Swing_Type_Name: "Out-In Power", Swing_Type_Name_JP: "アウトイン・パワーフォーム型", Overview: "パワフルなスイングで球の飛距離を重視。アウトインの軌道で力強く振り抜く。", impactClubPath: -7.2, impactAttackAngle: 2.8, impactHeadSpeed: 41.5, impactFaceAngle: -4.6, estimateCarry: 238.4 },
-  { id: 1, Club_Type: "ドライバー", Swing_Type_Name: "Out-In Compact", Swing_Type_Name_JP: "アウトイン・コンパクトフォーム型", Overview: "コンパクトなスイングでコントロール重視。アウトインの軌道で正確性を高める。", impactClubPath: -5.4, impactAttackAngle: 1.3, impactHeadSpeed: 35.2, impactFaceAngle: -3.2, estimateCarry: 182.6 },
-  { id: 2, Club_Type: "ドライバー", Swing_Type_Name: "Flexible Inside-Out", Swing_Type_Name_JP: "インアウト・フレキシブルフォーム型", Overview: "柔軟なフォームでスイング軌道に変化があり、状況対応力が高いスタイル。", impactClubPath: 9.05, impactAttackAngle: -0.05, impactHeadSpeed: 38.87, impactFaceAngle: 8.29, estimateCarry: 206.06 },
-  { id: 3, Club_Type: "ドライバー", Swing_Type_Name: "Inside-Out Power", Swing_Type_Name_JP: "インアウト・パワーフォーム型", Overview: "インアウトの軌道でパワーを活かしたスイング。ドローボールを打ちやすいスタイル。", impactClubPath: 8.5, impactAttackAngle: 1.9, impactHeadSpeed: 40.2, impactFaceAngle: 5.3, estimateCarry: 228.7 },
-  { id: 4, Club_Type: "ドライバー", Swing_Type_Name: "Inside-Out Standard", Swing_Type_Name_JP: "インアウト・スタンダードフォーム型", Overview: "バランスのとれたフォームでインアウト軌道を実現。安定感のあるスイング。", impactClubPath: 6.8, impactAttackAngle: 1.2, impactHeadSpeed: 37.5, impactFaceAngle: 4.1, estimateCarry: 196.3 },
-  { id: 5, Club_Type: "アイアン", Swing_Type_Name: "Out-In Standard", Swing_Type_Name_JP: "アウトイン・スタンダードフォーム型", Overview: "安定したスイングフォームでアウトイン軌道を作る。コントロールとパワーのバランスを重視。", impactClubPath: -6.3, impactAttackAngle: 2.1, impactHeadSpeed: 38.1, impactFaceAngle: -3.8, estimateCarry: 201.8 },
-  { id: 6, Club_Type: "アイアン", Swing_Type_Name: "Square Power", Swing_Type_Name_JP: "スクエア・パワーフォーム型", Overview: "スクエアな軌道でパワフルに振り抜くスタイル。直進性の高いボールが特徴。", impactClubPath: 0.8, impactAttackAngle: 3.2, impactHeadSpeed: 39.8, impactFaceAngle: 0.6, estimateCarry: 216.4 },
-  { id: 7, Club_Type: "アイアン", Swing_Type_Name: "Square Compact", Swing_Type_Name_JP: "スクエア・コンパクトフォーム型", Overview: "コンパクトでスクエアな軌道を作るスイング。安定感と再現性に優れる。", impactClubPath: 0.3, impactAttackAngle: 2.7, impactHeadSpeed: 34.6, impactFaceAngle: 0.2, estimateCarry: 176.5 },
-  { id: 8, Club_Type: "アイアン", Swing_Type_Name: "Straight Power", Swing_Type_Name_JP: "ストレート・パワーフォーム型", Overview: "真っすぐなスイング軌道でパワーを最大化。シンプルかつ効果的なスイング。", impactClubPath: 1.2, impactAttackAngle: 3.6, impactHeadSpeed: 40.5, impactFaceAngle: 1.1, estimateCarry: 220.3 },
-  { id: 9, Club_Type: "アイアン", Swing_Type_Name: "Straight Compact", Swing_Type_Name_JP: "ストレート・コンパクトフォーム型", Overview: "コンパクトで真っすぐなスイング軌道。再現性と正確性に優れたスタイル。", impactClubPath: 0.9, impactAttackAngle: 2.4, impactHeadSpeed: 33.8, impactFaceAngle: 0.7, estimateCarry: 172.1 }
+  { id: 0, Club_Type: "ドライバー", Swing_Type_Name: "Out-In Power", Swing_Type_Name_JP: "アウトイン・パワーフォーム型", Overview: "パワフルなスイングで球の飛距離を重視。アウトインの軌道で力強く振り抜く。" },
+  { id: 1, Club_Type: "ドライバー", Swing_Type_Name: "Out-In Compact", Swing_Type_Name_JP: "アウトイン・コンパクトフォーム型", Overview: "コンパクトなスイングでコントロール重視。アウトインの軌道で正確性を高める。" },
+  { id: 2, Club_Type: "ドライバー", Swing_Type_Name: "Flexible Inside-Out", Swing_Type_Name_JP: "インアウト・フレキシブルフォーム型", Overview: "柔軟なフォームでスイング軌道に変化があり、状況対応力が高いスタイル。" },
+  { id: 3, Club_Type: "ドライバー", Swing_Type_Name: "Inside-Out Power", Swing_Type_Name_JP: "インアウト・パワーフォーム型", Overview: "インアウトの軌道でパワーを活かしたスイング。ドローボールを打ちやすいスタイル。" },
+  { id: 4, Club_Type: "ドライバー", Swing_Type_Name: "Inside-Out Standard", Swing_Type_Name_JP: "インアウト・スタンダードフォーム型", Overview: "バランスのとれたフォームでインアウト軌道を実現。安定感のあるスイング。" },
+  { id: 5, Club_Type: "アイアン", Swing_Type_Name: "Out-In Standard", Swing_Type_Name_JP: "アウトイン・スタンダードフォーム型", Overview: "安定したスイングフォームでアウトイン軌道を作る。コントロールとパワーのバランスを重視。" },
+  { id: 6, Club_Type: "アイアン", Swing_Type_Name: "Square Power", Swing_Type_Name_JP: "スクエア・パワーフォーム型", Overview: "スクエアな軌道でパワフルに振り抜くスタイル。直進性の高いボールが特徴。" },
+  { id: 7, Club_Type: "アイアン", Swing_Type_Name: "Square Compact", Swing_Type_Name_JP: "スクエア・コンパクトフォーム型", Overview: "コンパクトでスクエアな軌道を作るスイング。安定感と再現性に優れる。" },
+  { id: 8, Club_Type: "アイアン", Swing_Type_Name: "Straight Power", Swing_Type_Name_JP: "ストレート・パワーフォーム型", Overview: "真っすぐなスイング軌道でパワーを最大化。シンプルかつ効果的なスイング。" },
+  { id: 9, Club_Type: "アイアン", Swing_Type_Name: "Straight Compact", Swing_Type_Name_JP: "ストレート・コンパクトフォーム型", Overview: "コンパクトで真っすぐなスイング軌道。再現性と正確性に優れたスタイル。" }
 ];
 
+// 指標名と単位の対応表
+const unitMap = {
+  'impactClubPath': '°',
+  'impactHandFirst': '',
+  'addressHandFirst': '',
+  'impactGripSpeed': 'm/s',
+  'maxGripSpeed': 'm/s',
+  'downSwingShaftRotationMax': 'dps',
+  'downSwingShaftRotationMin': 'dps',
+  'halfwaydownFaceAngleToVertical': '°',
+  'halfwaybackFaceAngleToVertical': '°',
+  'topFaceAngleToHorizontal': '°',
+  'addressLieAngle': '°',
+  'estimateCarry': 'yd',
+  'impactHeadSpeed': 'm/s',
+  'impactFaceAngle': '°',
+  'impactLoftAngle': '°',
+  'impactLieAngle': '°',
+  'impactAttackAngle': '°'
+};
+
 
 // =========================
-// ヘルパー関数
+// ヘルパー関数 (定義はここに1回だけ)
 // =========================
-
 // 日付を更新する関数
 function updateDate() {
   const now = new Date();
@@ -35,7 +58,7 @@ function updateDate() {
   if (dateElement) {
     dateElement.textContent = `Last updated: ${formattedDate}`;
   } else {
-    console.warn("要素 #update-date が見つかりません。");
+    // console.warn("要素 #update-date が見つかりません。");
   }
 }
 
@@ -48,14 +71,45 @@ const displayValue = (elementId, value, decimals = 1) => {
                           ? number.toFixed(decimals)
                           : '---';
   } else {
-     // console.warn(`要素 #${elementId} が見つかりません。`); // デバッグ時以外はコメントアウト推奨
+     // console.warn(`要素 #${elementId} が見つかりません。要素IDを確認してください: ${elementId}`);
   }
 };
+
+// 数値をパーセント表示するヘルパー関数
+const displayPercentage = (element, value, decimals = 2) => {
+  if (element) {
+    const number = parseFloat(value);
+    if (value !== null && value !== undefined && !isNaN(number)) {
+      element.textContent = (number * 100).toFixed(decimals) + '%';
+    } else {
+      element.textContent = '---';
+    }
+  }
+};
+
+// 指定された要素に単位を追加するヘルパー関数
+function addUnit(elementId, unit) {
+    const element = document.getElementById(elementId);
+    // 値が表示されていて('---'ではない)、かつ単位が指定されている場合のみ追加
+    if (element && element.textContent !== '---' && unit) {
+        element.textContent += ' ' + unit; // 半角スペースを追加
+    }
+}
+
+// 指定IDの要素にテキストを設定するヘルパー関数
+function setTextContent(elementId, text) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = text ?? '---'; // null や undefined の場合は '---' を表示
+    } else {
+        // console.warn(`要素 #${elementId} が見つかりません。`);
+    }
+}
+
 
 // =========================
 // テーブル表示関連関数
 // =========================
-
 // テーブル行をレンダリング
 function renderTableRows(data, page = 1, rowsPerPage = 8) {
   const tbody = document.getElementById('data-table-body');
@@ -73,14 +127,14 @@ function renderTableRows(data, page = 1, rowsPerPage = 8) {
 
   visibleRows.forEach((row, i) => {
     const tr = document.createElement('tr');
-    const formatNum = (val, digits = 1) => (val !== null && val !== undefined && !isNaN(parseFloat(val))) ? parseFloat(val).toFixed(digits) : '---'; // toFixedの前に数値変換
+    const formatNum = (val, digits = 1) => (val !== null && val !== undefined && !isNaN(parseFloat(val))) ? parseFloat(val).toFixed(digits) : '---';
     tr.innerHTML = `
       <td>${start + i + 1}</td>
-      <td>${formatNum(row.impactHeadSpeed)}</td>
-      <td>${formatNum(row.impactClubPath)}</td>
-      <td>${formatNum(row.impactFaceAngle)}</td>
-      <td>${formatNum(row.impactAttackAngle)}</td>
-      <td>${formatNum(row.estimateCarry)}</td>
+      <td>${formatNum(row.impactHeadSpeed)}${row.impactHeadSpeed !== null ? (' ' + (unitMap['impactHeadSpeed'] || '')) : ''}</td>
+      <td>${formatNum(row.impactClubPath)}${row.impactClubPath !== null ? (' ' + (unitMap['impactClubPath'] || '')) : ''}</td>
+      <td>${formatNum(row.impactFaceAngle)}${row.impactFaceAngle !== null ? (' ' + (unitMap['impactFaceAngle'] || '')) : ''}</td>
+      <td>${formatNum(row.impactAttackAngle)}${row.impactAttackAngle !== null ? (' ' + (unitMap['impactAttackAngle'] || '')) : ''}</td>
+      <td>${formatNum(row.estimateCarry)}${row.estimateCarry !== null ? (' ' + (unitMap['estimateCarry'] || '')) : ''}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -168,195 +222,346 @@ async function fetchAndDisplayTableData() {
   }
 }
 
-// =========================
-// スイングタイプ関連関数
-// =========================
-
-// 選択されたスイングタイプ情報を表示 (ドロップダウン用)
-function displaySwingTypeInfo(swingType) {
-  if (!swingType) return;
-  console.log("表示するスイングタイプ情報(ドロップダウン):", swingType);
-  const ids = { name: 'swing-type-name', club: 'club-type', jpName: 'cluster-name-jp', overview: 'swing-overview',
-                 carry: 'type-estimateCarry', speed: 'type-impactHeadSpeed', faceAngle: 'type-impactFaceAngle',
-                 clubPath: 'type-impactClubPath', attackAngle: 'type-impactAttackAngle' };
-
-  const nameEl = document.getElementById(ids.name);
-  const clubEl = document.getElementById(ids.club);
-  const jpNameEl = document.getElementById(ids.jpName);
-  const overviewEl = document.getElementById(ids.overview);
-  const carryEl = document.getElementById(ids.carry);
-  const speedEl = document.getElementById(ids.speed);
-  const faceAngleEl = document.getElementById(ids.faceAngle);
-  const clubPathEl = document.getElementById(ids.clubPath);
-  const attackAngleEl = document.getElementById(ids.attackAngle);
-
-  if (nameEl) nameEl.textContent = swingType.Swing_Type_Name || '---';
-  if (clubEl) clubEl.textContent = swingType.Club_Type || '---';
-  if (jpNameEl) jpNameEl.textContent = swingType.Swing_Type_Name_JP || '---';
-  if (overviewEl) overviewEl.textContent = swingType.Overview || '説明なし';
-
-  displayValue(ids.carry, swingType.estimateCarry, 2);
-  displayValue(ids.speed, swingType.impactHeadSpeed, 2);
-  displayValue(ids.faceAngle, swingType.impactFaceAngle, 2);
-  displayValue(ids.clubPath, swingType.impactClubPath, 2);
-  displayValue(ids.attackAngle, swingType.impactAttackAngle, 2);
-
-  // 単位追記
-  if (carryEl && carryEl.textContent !== '---') carryEl.textContent += ' yd';
-  if (speedEl && speedEl.textContent !== '---') speedEl.textContent += ' m/s';
-  if (faceAngleEl && faceAngleEl.textContent !== '---') faceAngleEl.textContent += '°';
-  if (clubPathEl && clubPathEl.textContent !== '---') clubPathEl.textContent += '°';
-  if (attackAngleEl && attackAngleEl.textContent !== '---') attackAngleEl.textContent += '°';
-}
 
 // =========================
-// スイング判定機能関連
+// スイングタイプ選択エリア関連 (上部)
 // =========================
-
-// BigQueryから取得したランダムなスイングデータを表示する関数
-// ★★★ この関数内の bqData.カラム名 は、あなたのBigQueryテーブルのカラム名に合わせてください ★★★
-function displayMySwingValues(bqData) {
-  console.log('表示するBigQueryデータ:', bqData);
-  if (!bqData) {
-      console.error("displayMySwingValues に無効なデータが渡されました。");
-      resetMeasuredValuesDisplay(); return;
+// ドロップダウンで選択されたタイプの情報を表示 (5指標の中央値も含む)
+function displaySelectedSwingTypeInfo(swingTypeId) {
+  const typeInfo = swingTypeData.find(type => type.id === swingTypeId);
+  if (!typeInfo) {
+      console.error(`スイングタイプID ${swingTypeId} の基本情報が見つかりません。`);
+      return;
   }
-  // --- 「あなたのスイング各種数値は」エリアの表示 ---
-  // ★★★ bqData.xxx の xxx は BigQuery のカラム名と完全に一致させる ★★★
-  displayValue('measured-clubpath', bqData.impactClubPath);
-  displayValue('measured-handfirst', bqData.impactHandFirst);
-  displayValue('measured-gripspeed', bqData.impactGripSpeed);
-  displayValue('measured-downswingrotmax', bqData.downSwingShaftRotationMax);
-  displayValue('measured-halfdownfacevert', bqData.halfwaydownFaceAngleToVertical);
-  displayValue('measured-halfbackfacevert', bqData.halfwaybackFaceAngleToVertical);
-  displayValue('measured-topfacehoriz', bqData.topFaceAngleToHorizontal);
+  console.log(`ドロップダウン選択: スイングタイプ ${swingTypeId} の情報を表示します。`);
 
-  // --- 詳細分析テーブルの「あなたの数値」列の表示 ---
-  const analysisTableBody = document.getElementById('analysis-table-body');
-  if (analysisTableBody) {
-    // ★★★ こちらも bqData.カラム名 を BigQuery のカラム名と合わせる ★★★
-    displayValue('analysis-halfdownfacevert', bqData.halfwaydownFaceAngleToVertical);
-    displayValue('analysis-downswingrotmax', bqData.downSwingShaftRotationMax);
-    displayValue('analysis-downswingrotmin', bqData.downSwingShaftRotationMin); // カラムが存在すれば表示
-    displayValue('analysis-gripspeed', bqData.impactGripSpeed);
-    displayValue('analysis-handfirst', bqData.addressHandFirst);    // カラムが存在すれば表示
-    displayValue('analysis-topfacehoriz', bqData.topFaceAngleToHorizontal);
-    displayValue('analysis-halfbackfacevert', bqData.halfwaybackFaceAngleToVertical);
-    displayValue('analysis-lieangle', bqData.addressLieAngle);     // カラムが存在すれば表示
-  } else {
-    console.warn("要素 #analysis-table-body が見つかりません。");
+  setTextContent('swing-type-name', typeInfo.Swing_Type_Name);
+  setTextContent('club-type', typeInfo.Club_Type);
+  setTextContent('cluster-name-jp', typeInfo.Swing_Type_Name_JP);
+  setTextContent('swing-overview', typeInfo.Overview);
+
+  const medianData = successMediansData[swingTypeId];
+  if (!medianData) {
+      console.warn(`スイングタイプID ${swingTypeId} の成功中央値データが見つかりません。`);
+      const idsMetrics = ['swing-type-estimateCarry', 'swing-type-impactHeadSpeed', 'swing-type-impactFaceAngle', 'swing-type-impactClubPath', 'swing-type-impactAttackAngle'];
+      idsMetrics.forEach(id => displayValue(id, null));
+      return;
   }
-}
 
-// エラー発生時などに「あなたのスイング各種数値は」エリアなどをリセットする関数
-function resetMeasuredValuesDisplay() {
-  const idsToReset = [
-    'measured-clubpath', 'measured-handfirst', 'measured-gripspeed',
-    'measured-downswingrotmax', 'measured-halfdownfacevert',
-    'measured-halfbackfacevert', 'measured-topfacehoriz',
-    'analysis-halfdownfacevert', 'analysis-downswingrotmax', 'analysis-downswingrotmin',
-    'analysis-gripspeed', 'analysis-handfirst', 'analysis-topfacehoriz',
-    'analysis-halfbackfacevert', 'analysis-lieangle'
+  const metricsToShow = [
+      { id: 'swing-type-estimateCarry', jsonKey: 'estimateCarry', decimals: 2 },
+      { id: 'swing-type-impactHeadSpeed', jsonKey: 'impactHeadSpeed', decimals: 2 },
+      { id: 'swing-type-impactFaceAngle', jsonKey: 'impactFaceAngle', decimals: 2 },
+      { id: 'swing-type-impactClubPath', jsonKey: 'impactClubPath', decimals: 2 },
+      { id: 'swing-type-impactAttackAngle', jsonKey: 'impactAttackAngle', decimals: 2 }
   ];
-  idsToReset.forEach(id => displayValue(id, null)); // '---' 表示にする
 
-  const judgedTypeNameEl = document.getElementById('judged-swing-type-name');
-  const judgedOverviewEl = document.getElementById('judged-swing-overview');
-  if(judgedTypeNameEl) judgedTypeNameEl.textContent = '---';
-  if(judgedOverviewEl) judgedOverviewEl.textContent = '';
+  metricsToShow.forEach(metric => {
+      // JSONデータにキーが存在するか確認
+      if (medianData.hasOwnProperty(metric.jsonKey)) {
+          const value = medianData[metric.jsonKey];
+          displayValue(metric.id, value, metric.decimals);
+          addUnit(metric.id, unitMap[metric.jsonKey]);
+      } else {
+          console.warn(`成功中央値データ(ID:${swingTypeId})にキー '${metric.jsonKey}' が存在しません。`);
+          displayValue(metric.id, null, metric.decimals); // '---' を表示
+      }
+  });
 }
+
+
+// =========================
+// スイング分析セクション関連 (下部)
+// =========================
+// BigQueryから取得したランダムスイングデータを「スイング結果数値」エリアに表示
+function displayMeasuredSwingResult(swingData) {
+  console.log('「スイング結果数値」エリアに表示:', swingData);
+  currentRandomSwingData = swingData;
+
+  if (!swingData) {
+    console.error("displayMeasuredSwingResult に無効なデータが渡されました。");
+    return;
+  }
+
+  const resultsToShow = [
+      { id: 'result-estimatecarry', bqKey: 'estimateCarry', decimals: 1 },
+      { id: 'result-headspeed', bqKey: 'impactHeadSpeed', decimals: 1 },
+      { id: 'result-faceangle', bqKey: 'impactFaceAngle', decimals: 1 },
+      { id: 'result-attackangle', bqKey: 'impactAttackAngle', decimals: 1 },
+      { id: 'result-clubpath', bqKey: 'impactClubPath', decimals: 1 },
+      { id: 'result-handfirst', bqKey: 'addressHandFirst', decimals: 1 },
+      { id: 'result-gripspeed', bqKey: 'impactGripSpeed', decimals: 1 },
+      { id: 'result-downswingrot', bqKey: 'downSwingShaftRotationMax', decimals: 1 },
+      { id: 'result-halfdownface', bqKey: 'halfwaydownFaceAngleToVertical', decimals: 1 },
+      { id: 'result-halfbackface', bqKey: 'halfwaybackFaceAngleToVertical', decimals: 1 },
+      { id: 'result-topface', bqKey: 'topFaceAngleToHorizontal', decimals: 1 }
+  ];
+
+  resultsToShow.forEach(item => {
+      if (swingData.hasOwnProperty(item.bqKey)) {
+          const value = swingData[item.bqKey];
+          displayValue(item.id, value, item.decimals);
+          addUnit(item.id, unitMap[item.bqKey]);
+      } else {
+          console.warn(`スイング結果データにキー '${item.bqKey}' が存在しません。`);
+          displayValue(item.id, null, item.decimals);
+      }
+  });
+}
+
+// クラスタタイプに対応する成功中央値を表示する関数
+function displaySuccessMedians(clusterId) {
+    console.log(`クラスタID ${clusterId} の成功中央値を表示します。`);
+    if (clusterId === null || clusterId === undefined) {
+        console.warn(`無効なクラスタID (${clusterId}) が渡されました。成功中央値をリセットします。`);
+        clusterId = null;
+    }
+
+    const medianData = clusterId !== null ? successMediansData[clusterId] : null;
+
+    const idsAndJsonKeys = [
+        { id: 'success-median-estimatecarry', jsonKey: 'estimateCarry', decimals: 1 },
+        { id: 'success-median-headspeed', jsonKey: 'impactHeadSpeed', decimals: 1 },
+        { id: 'success-median-faceangle', jsonKey: 'impactFaceAngle', decimals: 1 },
+        { id: 'success-median-attackangle', jsonKey: 'impactAttackAngle', decimals: 1 },
+        { id: 'success-median-clubpath', jsonKey: 'impactClubPath', decimals: 1 },
+        { id: 'success-median-handfirst', jsonKey: 'addressHandFirst', decimals: 1 },
+        { id: 'success-median-gripspeed', jsonKey: 'impactGripSpeed', decimals: 1 },
+        { id: 'success-median-downswingrot', jsonKey: 'downSwingShaftRotationMax', decimals: 1 },
+        { id: 'success-median-halfdownface', jsonKey: 'halfwaydownFaceAngleToVertical', decimals: 1 },
+        { id: 'success-median-halfbackface', jsonKey: 'halfwaybackFaceAngleToVertical', decimals: 1 },
+        { id: 'success-median-topface', jsonKey: 'topFaceAngleToHorizontal', decimals: 1 }
+    ];
+
+    if (!medianData && clusterId !== null) {
+        console.warn(`クラスタID ${clusterId} の成功中央値データが見つかりません。`);
+    }
+
+    idsAndJsonKeys.forEach(item => {
+         if (medianData && medianData.hasOwnProperty(item.jsonKey)) {
+            const value = medianData[item.jsonKey];
+            displayValue(item.id, value, item.decimals);
+            addUnit(item.id, unitMap[item.jsonKey]);
+         } else {
+            if(medianData) {
+               console.warn(`成功中央値データ(ID:${clusterId})にキー '${item.jsonKey}' が存在しません。`);
+            }
+            displayValue(item.id, null, item.decimals);
+         }
+    });
+}
+
+// 判定結果に応じて詳細分析テーブルを更新する関数
+function updateAnalysisTable(judgedClusterId) {
+  const tableBody = document.getElementById('analysis-table-body');
+  if (!tableBody) {
+    console.error("要素 #analysis-table-body が見つかりません。");
+    return;
+  }
+  tableBody.innerHTML = '';
+
+  if (judgedClusterId === null || judgedClusterId === undefined) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 4;
+      td.textContent = 'スイング判定ボタンを押して分析結果を表示します。';
+      td.style.textAlign = 'center';
+      tr.appendChild(td);
+      tableBody.appendChild(tr);
+      return;
+  }
+
+   if (Object.keys(clusterAnalysisData).length === 0) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 4;
+      td.textContent = '分析データを読み込み中です...';
+      td.style.textAlign = 'center';
+      tr.appendChild(td);
+      tableBody.appendChild(tr);
+      return;
+   }
+
+  const analysisItems = clusterAnalysisData[judgedClusterId];
+  if (!analysisItems || analysisItems.length === 0) {
+    console.warn(`クラスタID ${judgedClusterId} に対応する分析データが見つかりません。`);
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 4;
+    td.textContent = `クラスタ ${judgedClusterId} の分析データが見つかりません。`;
+    td.style.textAlign = 'center';
+    tr.appendChild(td);
+    tableBody.appendChild(tr);
+    return;
+  }
+
+  console.log(`クラスタ ${judgedClusterId} の分析データをテーブルに表示します。`);
+
+  analysisItems.forEach(item => {
+    const tr = document.createElement('tr');
+    const tdFeature = document.createElement('td');
+    tdFeature.textContent = item.Feature || '不明な指標';
+    tdFeature.style.textAlign = 'left';
+    tr.appendChild(tdFeature);
+
+    const tdImportance = document.createElement('td');
+    displayPercentage(tdImportance, item.Importance, 2);
+    tdImportance.style.textAlign = 'right';
+    tr.appendChild(tdImportance);
+
+    const tdMedian = document.createElement('td');
+    const medianValue = item.Median;
+    const medianUnit = unitMap[item.Feature] || '';
+    if (medianValue !== null && medianValue !== undefined && !isNaN(parseFloat(medianValue))) {
+        tdMedian.textContent = parseFloat(medianValue).toFixed(2) + (medianUnit ? ' ' + medianUnit : '');
+    } else {
+        tdMedian.textContent = '---';
+    }
+    tdMedian.style.textAlign = 'right';
+    tr.appendChild(tdMedian);
+
+    const tdYourValue = document.createElement('td');
+    const featureName = item.Feature;
+    const yourValue = currentRandomSwingData ? currentRandomSwingData[featureName] : null;
+    const yourValueUnit = unitMap[featureName] || '';
+    if (currentRandomSwingData && currentRandomSwingData.hasOwnProperty(featureName) && yourValue !== null && yourValue !== undefined && !isNaN(parseFloat(yourValue))) {
+       tdYourValue.textContent = parseFloat(yourValue).toFixed(1) + (yourValueUnit ? ' ' + yourValueUnit : '');
+    } else {
+        if(currentRandomSwingData && !currentRandomSwingData.hasOwnProperty(featureName)){
+            console.warn(`あなたの数値データにキー '${featureName}' が存在しません。`);
+        }
+      tdYourValue.textContent = '---';
+    }
+    tdYourValue.style.textAlign = 'right';
+    tr.appendChild(tdYourValue);
+
+    tableBody.appendChild(tr);
+  });
+}
+
+// 判定結果を表示する（ボタン横の結果テキスト、成功中央値、分析テーブル）
+function displayJudgeResult(judgedTypeId) {
+    const resultDisplayArea = document.getElementById('judged-result-display');
+    const resultTextElement = document.getElementById('judged-swing-type-name-new');
+
+    if (judgedTypeId === null || judgedTypeId === undefined) {
+        setTextContent('judged-swing-type-name-new', 'タイプ判定不可');
+        if (resultDisplayArea) resultDisplayArea.style.display = 'block';
+        displaySuccessMedians(null);
+        updateAnalysisTable(null);
+        return;
+    }
+
+    const swingType = swingTypeData.find(type => type.id === judgedTypeId);
+    const typeName = swingType ? swingType.Swing_Type_Name_JP : `タイプ ${judgedTypeId} (名称不明)`;
+
+    console.log(`判定結果を表示: ${typeName}`);
+
+    if (resultDisplayArea) resultDisplayArea.style.display = 'none';
+    setTextContent('judged-swing-type-name-new', '判定中...');
+
+    setTimeout(() => {
+        setTextContent('judged-swing-type-name-new', typeName);
+        if (resultDisplayArea) resultDisplayArea.style.display = 'block';
+    }, 500);
+
+    displaySuccessMedians(judgedTypeId);
+    updateAnalysisTable(judgedTypeId);
+}
+
+// スイング分析セクション全体をリセットする関数
+function resetSwingAnalysisSection() {
+  const resultIds = [
+      'result-estimatecarry', 'result-headspeed', 'result-faceangle', 'result-attackangle',
+      'result-clubpath', 'result-handfirst', 'result-gripspeed', 'result-downswingrot',
+      'result-halfdownface', 'result-halfbackface', 'result-topface'
+  ];
+  resultIds.forEach(id => displayValue(id, null));
+
+  const medianIds = [
+      'success-median-estimatecarry', 'success-median-headspeed', 'success-median-faceangle', 'success-median-attackangle',
+      'success-median-clubpath', 'success-median-handfirst', 'success-median-gripspeed', 'success-median-downswingrot',
+      'success-median-halfdownface', 'success-median-halfbackface', 'success-median-topface'
+  ];
+  medianIds.forEach(id => displayValue(id, null));
+
+  const resultDisplayArea = document.getElementById('judged-result-display');
+  if (resultDisplayArea) resultDisplayArea.style.display = 'none';
+  setTextContent('judged-swing-type-name-new', '');
+
+  updateAnalysisTable(null);
+  currentRandomSwingData = null;
+}
+
 
 // --- スイングタイプを判定する関数 ---
-// swingData: 判定対象のスイングデータ (BigQueryから取得した1行)
-// thresholds: 閾値データ (APIから取得した全ルール)
+// (定義はここに1回だけ)
 function judgeSwingType(swingData, thresholds) {
   if (!swingData || !thresholds || thresholds.length === 0) {
     console.log("判定データまたは閾値データが不足しています。");
-    return null; // 判定不可
+    return null;
   }
-  console.log("判定対象データ:", swingData);
-  console.log("使用する閾値データ:", thresholds.length > 0 ? "あり" : "なし");
+  // console.log("判定対象データ:", swingData);
+  // console.log("使用する閾値データ:", thresholds.length > 0 ? `${thresholds.length}件` : 'なし');
 
-  // クラスタIDごとに閾値データをグループ化
   const thresholdsByCluster = thresholds.reduce((acc, rule) => {
-    const clusterId = rule.swing_cluster; // BigQueryの閾値テーブルのカラム名に合わせる
+    const clusterId = rule.swing_cluster;
+    if (clusterId === undefined || clusterId === null) {
+        // console.warn("閾値データに 'swing_cluster' が見つかりません:", rule);
+        return acc;
+    }
     if (!acc[clusterId]) acc[clusterId] = [];
     acc[clusterId].push(rule);
     return acc;
   }, {});
 
-  // クラスタID 0 から順番にチェック (昇順ソートを保証するためキーを取得してソート)
   const clusterIds = Object.keys(thresholdsByCluster).map(Number).sort((a, b) => a - b);
 
   for (const clusterId of clusterIds) {
     const rulesForCluster = thresholdsByCluster[clusterId];
-    let allMatch = true; // このクラスタの全ルールに一致したかのフラグ
-    // console.log(`--- クラスタ ${clusterId} の判定開始 ---`);
+    let allMatch = true;
 
     for (const rule of rulesForCluster) {
-      const featureName = rule.feature; // 閾値テーブルのカラム名に合わせる
-      const minThreshold = parseFloat(rule.min); // 閾値テーブルのカラム名に合わせる
-      const maxThreshold = parseFloat(rule.max); // 閾値テーブルのカラム名に合わせる
+      const featureName = rule.feature;
+      const minThreshold = parseFloat(rule.min);
+      const maxThreshold = parseFloat(rule.max);
 
-      // 判定対象のスイングデータに該当するカラムがあるかチェック
+      if (!featureName || isNaN(minThreshold) || isNaN(maxThreshold)) {
+          // console.warn(`無効な閾値ルールが見つかりました (クラスタ ${clusterId}):`, rule);
+          allMatch = false;
+          break;
+      }
+
       if (swingData[featureName] === undefined) {
-        console.log(`    -> 判定不能: スイングデータに ${featureName} がありません。`);
+        // console.warn(`    -> 判定不能: スイングデータにカラム '${featureName}' が見つかりません。`);
         allMatch = false;
-        break; // このクラスタは判定不可
+        break;
       }
 
       const swingValue = parseFloat(swingData[featureName]);
 
-      // 値が数値として有効かチェック
       if (isNaN(swingValue)) {
-        console.log(`    -> 判定不能: スイングデータの ${featureName} が数値ではありません。`);
+        // console.warn(`    -> 判定不能: スイングデータ '${featureName}' の値 '${swingData[featureName]}' が有効な数値ではありません。`);
         allMatch = false;
-        break; // このクラスタは判定不可
+        break;
       }
 
-      // console.log(`  [${featureName}] 値:${swingValue} vs 範囲:[${minThreshold} ～ ${maxThreshold}]`);
-
-      // 閾値の範囲内かチェック
       if (!(swingValue >= minThreshold && swingValue <= maxThreshold)) {
-        // console.log(`    -> 不一致`);
         allMatch = false;
-        break; // 一つでも範囲外なら、このクラスタは不一致
-      } else {
-        // console.log(`    -> 一致`);
+        break;
       }
     }
 
     if (allMatch) {
       console.log(`★★★ クラスタ ${clusterId} に合致しました！ ★★★`);
-      return clusterId; // 合致したクラスタIDを返す
+      return clusterId;
     }
   }
 
   console.log("どのクラスタの条件にも完全に一致しませんでした。");
-  return null; // どのタイプにも当てはまらない
+  return null;
 }
 
-// --- 判定結果のスイングタイプ情報を表示する関数 ---
-function displayJudgedSwingType(swingType) {
-    const judgedTypeNameEl = document.getElementById('judged-swing-type-name');
-    const judgedOverviewEl = document.getElementById('judged-swing-overview');
-
-    if (!swingType) {
-        if(judgedTypeNameEl) judgedTypeNameEl.textContent = 'タイプ判定不可';
-        if(judgedOverviewEl) judgedOverviewEl.textContent = '条件に合致するスイングタイプが見つかりませんでした。';
-        // ★★★ 必要なら詳細分析テーブルの内容もリセット or デフォルト表示にする ★★★
-        return;
-    }
-
-    console.log("判定結果として表示するスイングタイプ:", swingType);
-    if(judgedTypeNameEl) judgedTypeNameEl.textContent = swingType.Swing_Type_Name_JP || '名称不明';
-    if(judgedOverviewEl) judgedOverviewEl.textContent = swingType.Overview || '説明なし';
-
-    // ★★★ 詳細分析テーブルの「目標数値」「寄与度」を動的に更新 ★★★
-    // この機能が必要な場合は、swingTypeData にその情報を含め、
-    // ここで対応するHTML要素 (例: <td id="target-value-xxx">) の内容を更新する
-    console.log("詳細分析テーブルの目標値等の更新は未実装です。");
-}
 
 // =========================
 // ページ読み込み完了時の処理 (DOMContentLoaded)
@@ -364,164 +569,135 @@ function displayJudgedSwingType(swingType) {
 document.addEventListener('DOMContentLoaded', async function() {
   console.log('DOM読み込み完了、初期化開始');
 
-  // --- ① 日付更新 ---
-  updateDate();
+  updateDate(); // 日付更新
 
-  // --- ② APIから各種初期データを並行取得 ---
+  // --- API/JSONデータ並行取得 ---
   const initialFetchPromises = [];
-
   // 中央値取得
   initialFetchPromises.push(
     fetch('/api/median')
       .then(res => res.ok ? res.json() : Promise.reject(new Error(`Median API エラー: ${res.status}`)))
       .then(data => {
-        console.log('メイン指標データ受信（API）:', data);
         metricsDataLoaded = true;
-        displayValue('median-estimateCarry', data.median_estimateCarry);
-        displayValue('median-impactHeadSpeed', data.median_impactHeadSpeed);
-        displayValue('median-impactFaceAngle', data.median_impactFaceAngle);
-        const carryUnitEl = document.getElementById('median-estimateCarry');
-        const speedUnitEl = document.getElementById('median-impactHeadSpeed');
-        const angleUnitEl = document.getElementById('median-impactFaceAngle');
-        if(carryUnitEl && carryUnitEl.textContent !== '---') carryUnitEl.textContent += ' yd';
-        if(speedUnitEl && speedUnitEl.textContent !== '---') speedUnitEl.textContent += ' m/s';
-        if(angleUnitEl && angleUnitEl.textContent !== '---') angleUnitEl.textContent += '°';
-      })
-      .catch(err => {
-        console.error(err);
-        metricsDataLoaded = false;
-        ['median-estimateCarry', 'median-impactHeadSpeed', 'median-impactFaceAngle'].forEach(id => displayValue(id, null));
-      })
+        displayValue('median-estimateCarry', data.median_estimateCarry, 1);
+        addUnit('median-estimateCarry', unitMap['estimateCarry']);
+        displayValue('median-impactHeadSpeed', data.median_impactHeadSpeed, 1);
+        addUnit('median-impactHeadSpeed', unitMap['impactHeadSpeed']);
+        displayValue('median-impactFaceAngle', data.median_impactFaceAngle, 1);
+        addUnit('median-impactFaceAngle', unitMap['impactFaceAngle']);
+      }).catch(err => { console.error(err); metricsDataLoaded = false; ['median-estimateCarry', 'median-impactHeadSpeed', 'median-impactFaceAngle'].forEach(id => displayValue(id, null)); })
   );
-
   // 詳細指標取得
   initialFetchPromises.push(
     fetch('/api/metrics')
       .then(res => res.ok ? res.json() : Promise.reject(new Error(`Metrics API エラー: ${res.status}`)))
       .then(data => {
-        console.log('詳細指標データ受信（API）:', data);
         metricsDataLoaded = true;
-        displayValue('metric-clubPath', data.median_impactClubPath);
-        displayValue('metric-loftAngle', data.median_impactLoftAngle);
-        displayValue('metric-gripSpeed', data.median_maxGripSpeed);
-        displayValue('metric-lieAngle', data.median_impactLieAngle);
-        displayValue('metric-attackAngle', data.median_impactAttackAngle);
-        const clubPathUnitEl = document.getElementById('metric-clubPath');
-        const loftUnitEl = document.getElementById('metric-loftAngle');
-        const gripUnitEl = document.getElementById('metric-gripSpeed');
-        const lieUnitEl = document.getElementById('metric-lieAngle');
-        const attackUnitEl = document.getElementById('metric-attackAngle');
-        if(clubPathUnitEl && clubPathUnitEl.textContent !== '---') clubPathUnitEl.textContent += '°';
-        if(loftUnitEl && loftUnitEl.textContent !== '---') loftUnitEl.textContent += '°';
-        if(gripUnitEl && gripUnitEl.textContent !== '---') gripUnitEl.textContent += ' m/s';
-        if(lieUnitEl && lieUnitEl.textContent !== '---') lieUnitEl.textContent += '°';
-        if(attackUnitEl && attackUnitEl.textContent !== '---') attackUnitEl.textContent += '°';
-      })
-      .catch(err => {
-        console.error(err);
-        ['metric-clubPath', 'metric-loftAngle', 'metric-gripSpeed', 'metric-lieAngle', 'metric-attackAngle'].forEach(id => displayValue(id, null));
-      })
+        displayValue('metric-clubPath', data.median_impactClubPath, 1);
+        addUnit('metric-clubPath', unitMap['impactClubPath']);
+        displayValue('metric-loftAngle', data.median_impactLoftAngle, 1);
+        addUnit('metric-loftAngle', unitMap['impactLoftAngle']);
+        displayValue('metric-gripSpeed', data.median_maxGripSpeed, 1);
+        addUnit('metric-gripSpeed', unitMap['maxGripSpeed']);
+        displayValue('metric-lieAngle', data.median_impactLieAngle, 1);
+        addUnit('metric-lieAngle', unitMap['impactLieAngle']);
+        displayValue('metric-attackAngle', data.median_impactAttackAngle, 1);
+        addUnit('metric-attackAngle', unitMap['impactAttackAngle']);
+      }).catch(err => { console.error(err); ['metric-clubPath', 'metric-loftAngle', 'metric-gripSpeed', 'metric-lieAngle', 'metric-attackAngle'].forEach(id => displayValue(id, null)); })
   );
-
   // 閾値データ取得
   initialFetchPromises.push(
-    fetch('/api/thresholds') // ★★★ 追加 ★★★
-      .then(res => {
-        if (!res.ok) throw new Error(`閾値APIエラー: ${res.status}`);
-        return res.json();
-      })
+    fetch('/api/thresholds')
+      .then(res => { if (!res.ok) throw new Error(`閾値APIエラー: ${res.status}`); return res.json(); })
+      .then(data => { thresholdData = Array.isArray(data) ? data : []; if (!Array.isArray(data)) console.error("閾値データが配列ではありません。"); })
+      .catch(err => { console.error('閾値データ取得エラー:', err); thresholdData = []; })
+  );
+  // クラスタ分析データ取得
+  initialFetchPromises.push(
+    fetch('/data/cluster_analysis_data.json')
+      .then(res => { if (!res.ok) throw new Error(`分析データファイル読み込みエラー: ${res.status}`); return res.json(); })
       .then(data => {
-        console.log('閾値データ受信:', data ? `${data.length}件` : 'データなし');
-        if (Array.isArray(data)) {
-            thresholdData = data; // グローバル変数に保存
-        } else {
-            console.error("受信した閾値データが配列ではありません。");
-            thresholdData = []; // 空にしておく
-        }
-      })
-      .catch(err => {
-        console.error('閾値データ取得エラー:', err);
-        thresholdData = []; // エラー時も空配列
-      })
+        if (Array.isArray(data)) { clusterAnalysisData = data.reduce((acc, item) => { const id = item.cluster_id; if (!acc[id]) acc[id] = []; acc[id].push(item); return acc; }, {}); }
+        else { console.error("分析データが配列ではありません。"); clusterAnalysisData = {}; }
+      }).catch(err => { console.error('分析データ取得/処理エラー:', err); clusterAnalysisData = {}; })
+  );
+ // 成功中央値データ取得
+ initialFetchPromises.push(
+    fetch('/data/cluster_success_medians.json')
+      .then(res => { if (!res.ok) throw new Error(`成功中央値データ読み込みエラー: ${res.status}`); return res.json(); })
+      .then(data => {
+        if (Array.isArray(data)) { successMediansData = data.reduce((acc, item) => { acc[item.cluster_id] = item; return acc; }, {}); }
+        else { console.error("成功中央値データが配列ではありません。"); successMediansData = {}; }
+      }).catch(err => { console.error('成功中央値データ取得/処理エラー:', err); successMediansData = {}; })
   );
 
-  // --- ③ スイングタイプ選択の初期化 (閾値取得後に行う必要はない) ---
-   const swingTypeSelect = document.getElementById('swing-type-select');
-   if (swingTypeSelect) {
-     try {
-       const swingTypes = swingTypeData;
-       swingTypeSelect.innerHTML = '';
-       swingTypes.forEach(type => {
-         const option = document.createElement('option');
-         option.value = type.id;
-         option.textContent = `Swing type ID ${type.id}：${type.Swing_Type_Name_JP}`;
-         if (type.id === 2) option.selected = true;
-         swingTypeSelect.appendChild(option);
-       });
-       const initialTypeId = parseInt(swingTypeSelect.value);
-       const initialType = swingTypes.find(type => type.id === initialTypeId);
-       if (initialType) displaySwingTypeInfo(initialType);
-       swingTypeSelect.addEventListener('change', function() {
-         const selectedId = parseInt(this.value);
-         const selectedType = swingTypes.find(type => type.id === selectedId);
-         if (selectedType) displaySwingTypeInfo(selectedType);
-       });
-     } catch (error) {
-       console.error("スイングタイプ初期化エラー:", error);
-     }
-   } else {
-     console.warn("要素 #swing-type-select が見つかりません。");
-   }
-
-  // --- ④ テーブルデータ表示処理 ---
-  // 全ての初期API(中央値、詳細指標、閾値)の完了を待ってからテーブル表示
+  // --- データ取得完了後に実行 ---
   Promise.allSettled(initialFetchPromises).finally(() => {
-     console.log("初期データ取得完了後、テーブルデータを取得します。");
-     fetchAndDisplayTableData();
+     console.log("全ての初期データ取得完了。");
+     fetchAndDisplayTableData(); // スイングデータ一覧
+
+     // 上部ドロップダウン初期化
+     const swingTypeSelect = document.getElementById('swing-type-select');
+     if (swingTypeSelect) {
+       try {
+         swingTypeSelect.innerHTML = '';
+         swingTypeData.forEach(type => {
+           const option = document.createElement('option');
+           option.value = type.id;
+           option.textContent = `Swing type ID ${type.id}：${type.Swing_Type_Name_JP}`;
+           if (type.id === 0) option.selected = true;
+           swingTypeSelect.appendChild(option);
+         });
+         const initialTypeId = parseInt(swingTypeSelect.value);
+         displaySelectedSwingTypeInfo(initialTypeId); // 初期表示
+
+         swingTypeSelect.addEventListener('change', function() {
+           const selectedId = parseInt(this.value);
+           displaySelectedSwingTypeInfo(selectedId);
+         });
+       } catch (error) { console.error("スイングタイプ選択エリア初期化エラー:", error); displaySelectedSwingTypeInfo(0); }
+     } else { console.warn("要素 #swing-type-select が見つかりません。"); }
+
+     resetSwingAnalysisSection(); // 下部セクションリセット
   });
 
-  // --- ⑤ スイング判定ボタンのクリックイベント設定 ---
+  // --- スイング判定ボタンのイベント設定 ---
   const judgeButton = document.getElementById('judge-my-swing-button');
   if (judgeButton) {
     judgeButton.addEventListener('click', async () => {
-      console.log('スイング判定ボタンが押されました！ BigQueryからランダムデータ取得開始...');
+      console.log('スイング判定ボタンが押されました！');
       const apiUrl = '/api/random-swing';
-
       judgeButton.disabled = true;
-      judgeButton.textContent = '判定中...';
-      const judgedTypeNameEl = document.getElementById('judged-swing-type-name');
-      const judgedOverviewEl = document.getElementById('judged-swing-overview');
-      if(judgedTypeNameEl) judgedTypeNameEl.textContent = 'データを取得・判定中...';
-      if(judgedOverviewEl) judgedOverviewEl.textContent = '';
-      resetMeasuredValuesDisplay();
+      judgeButton.textContent = 'AIによる解析中...';
+      resetSwingAnalysisSection();
 
       try {
+        console.log('データ取得中...');
         const response = await fetch(apiUrl);
-        if (!response.ok) { /* ... エラー処理 ... */ } // (エラー処理は省略)
-        const randomSwingData = await response.json();
-        console.log('BigQueryから取得したランダムデータ:', randomSwingData);
-
-        displayMySwingValues(randomSwingData); // 取得したデータを表示
-
-        // ▼▼▼ 判定処理と結果表示を追加 ▼▼▼
-        const judgedTypeId = judgeSwingType(randomSwingData, thresholdData); // 判定実行！
-        console.log("判定結果のタイプID:", judgedTypeId);
-
-        if (judgedTypeId !== null) {
-          const judgedTypeInfo = swingTypeData.find(type => type.id === judgedTypeId);
-          displayJudgedSwingType(judgedTypeInfo); // 判定結果を表示
-        } else {
-          displayJudgedSwingType(null); // 判定不可を表示
+        if (!response.ok) {
+           const errorData = await response.json().catch(() => null);
+           throw new Error(`APIエラー: ${response.status}${errorData ? ` (${errorData.error})` : ''}`);
         }
-        // ▲▲▲ 判定処理と結果表示を追加 ▲▲▲
+        const randomSwingData = await response.json();
+        console.log('データ取得完了:', randomSwingData);
+
+        displayMeasuredSwingResult(randomSwingData); // スイング結果表示
+
+        console.log('タイプ判定中...');
+        const judgedTypeId = judgeSwingType(randomSwingData, thresholdData); // ★★★ ここで判定 ★★★
+        console.log("判定結果ID:", judgedTypeId);
+
+        displayJudgeResult(judgedTypeId); // 結果表示
 
       } catch (error) {
-        /* ... エラー処理 ... */ // (エラー処理は省略)
-         if(judgedTypeNameEl) judgedTypeNameEl.textContent = `エラー: ${error.message}`;
-        resetMeasuredValuesDisplay();
+         console.error('判定処理エラー:', error);
+         const resultDisplayArea = document.getElementById('judged-result-display');
+         setTextContent('judged-swing-type-name-new', `エラー発生`);
+         if (resultDisplayArea) resultDisplayArea.style.display = 'block';
       } finally {
         judgeButton.disabled = false;
         judgeButton.textContent = 'スイング判定';
+        console.log('判定処理完了');
       }
     });
   } else {

@@ -56,6 +56,8 @@ app.get('/api/data', async (req, res) => {
         impactAttackAngle,
         impactGripSpeed,
         impactClubPath,
+        estimateCarry, 
+        impactHeadSpeed,
         swing_cluster_unified
       FROM \`m-tracer-data-dashboard.m_tracer_swing_data.m-tracer-dataset\`
       WHERE swing_cluster_unified IS NOT NULL
@@ -150,6 +152,8 @@ app.get('/api/random-swing', async (req, res) => {
       addressHandFirst,           -- これを追加
       addressLieAngle,            -- これを追加
           impactAttackAngle,
+    estimateCarry, 
+    impactHeadSpeed,
           impactFaceAngle,
           impactLoftAngle, -- 例: 追加
           maxGripSpeed     -- 例: 追加

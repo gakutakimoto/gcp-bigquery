@@ -17,7 +17,6 @@
           <div class="logo-subtitle">Golf Swing 3D Motion Sensor M-Tracer by Epson</div>
         </div>
       </div>
-      <!-- ▼▼▼ id="update-date" を追加 ▼▼▼ -->
       <div class="last-updated" id="update-date">Last updated: Apr 4, 2025</div>
     </div>
   </div>
@@ -31,18 +30,15 @@
   <div class="metric-row">
     <div class="card metric-card">
       <div class="metric-label">Estimate CARRY</div>
-      <!-- ▼▼▼ id="median-estimateCarry" を追加 ▼▼▼ -->
-      <div class="metric" id="median-estimateCarry" data-type="estimateCarry">--</div>
+      <div class="metric" id="median-estimateCarry">--</div>
     </div>
     <div class="card metric-card">
       <div class="metric-label">HEAD SPEED</div>
-      <!-- ▼▼▼ id="median-impactHeadSpeed" を追加 ▼▼▼ -->
-      <div class="metric" id="median-impactHeadSpeed" data-type="impactHeadSpeed">--</div>
+      <div class="metric" id="median-impactHeadSpeed">--</div>
     </div>
     <div class="card metric-card">
       <div class="metric-label">FACE ANGLE</div>
-      <!-- ▼▼▼ id="median-impactFaceAngle" を追加 ▼▼▼ -->
-      <div class="metric" id="median-impactFaceAngle" data-type="impactFaceAngle">--</div>
+      <div class="metric" id="median-impactFaceAngle">--</div>
     </div>
   </div>
 
@@ -51,32 +47,28 @@
   <div class="detailed-metrics metrics-row">
     <div class="card metric-card">
       <div class="metric-label">CLUB PATH</div>
-      <!-- ▼▼▼ id="metric-clubPath" を追加 ▼▼▼ -->
-      <div class="metric" id="metric-clubPath" data-type="impactClubPath">--</div>
+      <div class="metric" id="metric-clubPath">--</div>
     </div>
     <div class="card metric-card">
       <div class="metric-label">LOFT ANGLE</div>
-      <!-- ▼▼▼ id="metric-loftAngle" を追加 ▼▼▼ -->
-      <div class="metric" id="metric-loftAngle" data-type="impactLoftAngle">--</div>
+      <div class="metric" id="metric-loftAngle">--</div>
     </div>
     <div class="card metric-card">
       <div class="metric-label">GRIP SPEED</div>
-      <!-- ▼▼▼ id="metric-gripSpeed" を追加 ▼▼▼ -->
-      <div class="metric" id="metric-gripSpeed" data-type="maxGripSpeed">--</div>
+      <div class="metric" id="metric-gripSpeed">--</div>
     </div>
     <div class="card metric-card">
       <div class="metric-label">LIE ANGLE</div>
-      <!-- ▼▼▼ id="metric-lieAngle" を追加 ▼▼▼ -->
-      <div class="metric" id="metric-lieAngle" data-type="impactLieAngle">--</div>
+      <div class="metric" id="metric-lieAngle">--</div>
     </div>
     <div class="card metric-card">
       <div class="metric-label">ATTACK ANGLE</div>
-      <!-- ▼▼▼ id="metric-attackAngle" を追加 ▼▼▼ -->
-      <div class="metric" id="metric-attackAngle" data-type="impactAttackAngle">--</div>
+      <div class="metric" id="metric-attackAngle">--</div>
     </div>
   </div>
   <!-- detailed-metrics の閉じ div が一つ足りなかったので追加 -->
-  </div>
+  </div> <!-- ← この閉じタグは detailed-metrics のものです -->
+
 
   <!-- データテーブル -->
   <div class="table-section">
@@ -85,7 +77,6 @@
       <table class="data-table">
         <thead>
           <tr>
-            <!-- ▼▼▼ テーブルヘッダーの修正 ▼▼▼ -->
             <th class="sortable">id</th>
             <th class="sortable">Head Speed</th>
             <th class="sortable">Club Path</th>
@@ -95,7 +86,6 @@
           </tr>
         </thead>
         <tbody id="data-table-body">
-          <!-- JavaScriptによって動的に生成される -->
           <tr><td colspan="6">データを読み込み中...</td></tr>
         </tbody>
       </table>
@@ -107,7 +97,6 @@
   <div class="swing-type-section">
     <div class="section-title">M-Tracerクラスタ分析（k-Means / SHAPデータ強化 / LightGBMモデル学習）によるスイングタイプ分類</div>
     <div class="swing-type-selector">
-      <!-- ▼▼▼ option要素はJSで生成するため空にする ▼▼▼ -->
       <select id="swing-type-select" class="swing-type-dropdown">
          <option value="">読み込み中...</option>
       </select>
@@ -130,131 +119,121 @@
       <div class="swing-description" id="swing-overview">
         ---
       </div>
-      <div class="sub-section-title">スイングタイプによる指標中央値</div>
-      <div class="metrics-row">
-        <div class="metric-box">
+      <!-- ▼▼▼ ここは「スイングタイプによる指標中央値」というタイトルだったが、より正確な表現に変更 ▼▼▼ -->
+      <div class="sub-section-title">選択タイプの成功スイング指標中央値</div>
+      <!-- ▼▼▼ metrics-row から swing-type-metrics-row にクラス名変更（スタイル競合防止） ▼▼▼ -->
+      <div class="swing-type-metrics-row">
+        <!-- ▼▼▼ metric-box から swing-type-metric-box にクラス名変更 ▼▼▼ -->
+        <div class="swing-type-metric-box">
           <div class="metric-label">ESTIMATE CARRY</div>
-          <div id="type-estimateCarry" class="metric-value">---</div>
+          <!-- ▼▼▼ IDをより具体的に変更 ▼▼▼ -->
+          <div id="swing-type-estimateCarry" class="metric-value">---</div>
         </div>
-        <div class="metric-box">
+        <div class="swing-type-metric-box">
           <div class="metric-label">HEAD SPEED</div>
-          <div id="type-impactHeadSpeed" class="metric-value">---</div>
+          <div id="swing-type-impactHeadSpeed" class="metric-value">---</div>
         </div>
-        <div class="metric-box">
+        <div class="swing-type-metric-box">
           <div class="metric-label">FACE ANGLE</div>
-          <div id="type-impactFaceAngle" class="metric-value">---</div>
+          <div id="swing-type-impactFaceAngle" class="metric-value">---</div>
         </div>
-        <div class="metric-box">
+        <div class="swing-type-metric-box">
           <div class="metric-label">CLUB PATH</div>
-          <div id="type-impactClubPath" class="metric-value">---</div>
+          <div id="swing-type-impactClubPath" class="metric-value">---</div>
         </div>
-        <div class="metric-box">
+        <div class="swing-type-metric-box">
           <div class="metric-label">ATTACK ANGLE</div>
-          <div id="type-impactAttackAngle" class="metric-value">---</div>
+          <div id="swing-type-impactAttackAngle" class="metric-value">---</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- モデルデータセクション -->
-  <div class="swing-model-section">
-    <div class="section-title">M-Tracerの成功スイングモデル</div>
-    <div class="model-ranges">
-      <div>impactFaceAngle -5°～+5°　impactRelativeFaceAngle -5°～+5°</div>
-      <div>estimateCarry ドライバー：180～270　アイアン：60～180</div>
-      <div>impactAttackAngle ドライバー：0～+5（アッパーブロー）　アイアン：-7～-1（ダウンブロー）</div>
-    </div>
-    <div class="model-metrics">
-      <div class="metric-box">
-        <div class="label">ClubPath</div>
-        <div class="value">0.66°</div>
-      </div>
-      <div class="metric-box">
-        <div class="label">FaceToPath</div>
-        <div class="value">0.46°</div>
-      </div>
-      <div class="metric-box">
-        <div class="label">halfwayback FaceAngle</div>
-        <div class="value">-27.3°</div>
-      </div>
-      <div class="metric-box">
-        <div class="label">top FaceAngle</div>
-        <div class="value">7.1°</div>
-      </div>
-      <div class="metric-box">
-        <div class="label">downSwing Rotation</div>
-        <div class="value">-422.4m</div>
-      </div>
-      <div class="metric-box">
-        <div class="label">Shaft Rotation</div>
-        <div class="value">-1,236.5m</div>
-      </div>
-    </div>
-  </div> <!-- swing-model-section の閉じタグ -->
 
-  <!-- ▼▼▼ スイングクラスタ判定セクション ▼▼▼ -->
-  <div class="swing-judge-container" style="margin-top: 30px;">
-    <div class="section-title">スイングクラスタ判定
-      <span style="font-size: 12px; color: var(--text-secondary); margin-left: 10px;">M-Tracerをクラブに装着後スイングしてください</span>
-    </div>
-    <div style="margin-bottom: 20px; padding: 15px; background-color: var(--bg-card); border-radius: 6px; text-align: center;">
-      <button id="judge-my-swing-button" class="btn" style="padding: 10px 20px; font-size: 16px;">スイング判定</button>
-    </div>
-    <div class="measured-values-section " style="margin-bottom: 20px; padding: 15px; height: auto;">
-      <h4 style="margin-bottom: 15px; font-weight: 400; font-size: 15px; color: var(--text-secondary); text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">あなたのスイング各種数値は</h4>
-      <div class="measured-values-grid">
-        <div class="metric-box"> <div class="label">impactClubPath</div> <div class="value" id="measured-clubpath">---</div> </div>
-        <div class="metric-box"> <div class="label">impactHandFirst</div> <div class="value" id="measured-handfirst">---</div> </div>
-        <div class="metric-box"> <div class="label">impactGripSpeed</div> <div class="value" id="measured-gripspeed">---</div> </div>
-        <div class="metric-box"> <div class="label">downSwingShaftRotationMax</div> <div class="value" id="measured-downswingrotmax">---</div> </div>
-        <div class="metric-box"> <div class="label">halfwaydownFaceAngleToVertical</div> <div class="value" id="measured-halfdownfacevert">---</div> </div>
-        <div class="metric-box"> <div class="label">halfwaybackFaceAngleToVertical</div> <div class="value" id="measured-halfbackfacevert">---</div> </div>
-        <div class="metric-box"> <div class="label">topFaceAngleToHorizontal</div> <div class="value" id="measured-topfacehoriz">---</div> </div>
-        <!-- もし他の指標も追加していた場合は、それらの style="..." も削除してください -->
+  <!-- ▼▼▼ ここから大幅変更 ▼▼▼ -->
+  <!-- 新しいスイング分析セクション -->
+  <div class="swing-analysis-section" style="margin-top: 30px;">
+
+    <h3 class="section-title" style="border-bottom: none; margin-bottom: 15px;">スイングをクラスタ分析する</h3>
+
+    <!-- 判定ボタンと結果表示エリア -->
+    <div class="judge-action-area" style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+      <button id="judge-my-swing-button" class="btn" style="padding: 10px 20px; font-size: 18px;">スイング判定</button>
+      <!-- 判定結果表示用 (最初は非表示。JSで表示を制御) -->
+      <div id="judged-result-display" style="display: none; font-size: 22px; color: var(--accent-color);">
+        <span style="color: var(--text-secondary);">あなたのスイングクラスタ分類は ▶ </span>
+        <span id="judged-swing-type-name-new" style="font-weight: 400;">（判定結果）</span>
       </div>
     </div>
-    <div class="judged-swing-type-section" style="margin-bottom: 20px;">
-       <h4 style="margin-bottom: 10px; font-weight: 400; font-size: 15px; color: var(--text-secondary); text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">あなたのスイングタイプは</h4>
-       <div class="swing-type-info-container">
-         <div class="swing-info-row" style="background-color: var(--bg-dark); display: block; text-align: center; padding: 10px;">
-           <div id="judged-swing-type-name" class="info-value" style="font-size: 18px; margin-bottom: 5px;">（判定結果はここに表示）</div>
-         </div>
-         <div class="swing-description" id="judged-swing-overview" style="font-size: 15px;">
-           （スイングタイプの概要はここに表示）
-         </div>
-       </div>
+
+    <!-- スイング結果数値 -->
+    <div class="result-block" style="margin-bottom: 25px;">
+      <h4 class="sub-section-title" style="margin-bottom: 15px;">スイング結果数値</h4>
+      <div class="result-grid">
+        <!-- 1段目 -->
+        <div class="result-card"> <div class="label">ESTIMATE CARRY</div> <div class="value" id="result-estimatecarry">---</div> </div>
+        <div class="result-card"> <div class="label">HEAD SPEED</div> <div class="value" id="result-headspeed">---</div> </div>
+        <div class="result-card"> <div class="label">FACE ANGLE</div> <div class="value" id="result-faceangle">---</div> </div>
+        <div class="result-card"> <div class="label">ATTACK ANGLE</div> <div class="value" id="result-attackangle">---</div> </div>
+        <!-- 2段目 -->
+        <div class="result-card"> <div class="label">CLUB PATH</div> <div class="value" id="result-clubpath">---</div> </div>
+        <div class="result-card"> <div class="label">HAND FIRST</div> <div class="value" id="result-handfirst">---</div> </div>
+        <div class="result-card"> <div class="label">GRIP SPEED</div> <div class="value" id="result-gripspeed">---</div> </div>
+        <div class="result-card"> <div class="label">DOWNSWING SHAFTROTATION</div> <div class="value" id="result-downswingrot">---</div> </div>
+        <div class="result-card"> <div class="label">HALFWAYDOWN FACEANGLE</div> <div class="value" id="result-halfdownface">---</div> </div>
+        <div class="result-card"> <div class="label">HALFWAYBACK FACEANGLE</div> <div class="value" id="result-halfbackface">---</div> </div>
+        <div class="result-card"> <div class="label">TOP FACEANGLE</div> <div class="value" id="result-topface">---</div> </div>
+      </div>
     </div>
+
+    <!-- このクラスタタイプの成功スイング指標中央値 -->
+    <div class="result-block" style="margin-bottom: 25px;">
+      <h4 class="sub-section-title" style="margin-bottom: 15px;">このクラスタタイプの成功スイング指標中央値</h4>
+      <div class="result-grid">
+        <!-- 1段目 -->
+        <div class="result-card"> <div class="label">ESTIMATE CARRY</div> <div class="value" id="success-median-estimatecarry">---</div> </div>
+        <div class="result-card"> <div class="label">HEAD SPEED</div> <div class="value" id="success-median-headspeed">---</div> </div>
+        <div class="result-card"> <div class="label">FACE ANGLE</div> <div class="value" id="success-median-faceangle">---</div> </div>
+        <div class="result-card"> <div class="label">ATTACK ANGLE</div> <div class="value" id="success-median-attackangle">---</div> </div>
+        <!-- 2段目 -->
+        <div class="result-card"> <div class="label">CLUB PATH</div> <div class="value" id="success-median-clubpath">---</div> </div>
+        <div class="result-card"> <div class="label">HAND FIRST</div> <div class="value" id="success-median-handfirst">---</div> </div>
+        <div class="result-card"> <div class="label">GRIP SPEED</div> <div class="value" id="success-median-gripspeed">---</div> </div>
+        <div class="result-card"> <div class="label">DOWNSWING SHAFTROTATION</div> <div class="value" id="success-median-downswingrot">---</div> </div>
+        <div class="result-card"> <div class="label">HALFWAYDOWN FACEANGLE</div> <div class="value" id="success-median-halfdownface">---</div> </div>
+        <div class="result-card"> <div class="label">HALFWAYBACK FACEANGLE</div> <div class="value" id="success-median-halfbackface">---</div> </div>
+        <div class="result-card"> <div class="label">TOP FACEANGLE</div> <div class="value" id="success-median-topface">---</div> </div>
+      </div>
+    </div>
+
+    <!-- 既存の分析テーブル (変更なし) -->
     <div class="detailed-analysis-section">
-      <h4 style="margin-bottom: 10px; font-weight: 400; font-size: 15px; color: var(--text-secondary); text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">このスイングタイプの成功寄与指標と目標値との比較</h4>
+      <h4 class="sub-section-title" style="margin-bottom: 15px;">成功スイングへの寄与が高いプロセス指標と目標値</h4>
       <div class="table-container">
          <table class="data-table">
             <thead>
               <tr>
                 <th style="text-align: left;">成功寄与 スイングプロセス指標</th>
-                <th style="text-align: right;">成功寄与度 (%)</th>
+                <th style="text-align: right;">成功寄与度</th>
                 <th style="text-align: right;">目標数値</th>
                 <th style="text-align: right;">あなたの数値</th>
               </tr>
             </thead>
             <tbody id="analysis-table-body">
-              <tr> <td style="text-align: left;">halfwaydownFaceAngleToVertical</td> <td style="text-align: right;">22.88%</td> <td style="text-align: right;">12.92</td> <td id="analysis-halfdownfacevert" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">downSwingShaftRotationMax</td> <td style="text-align: right;">14.05%</td> <td style="text-align: right;">-425.61</td> <td id="analysis-downswingrotmax" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">downSwingShaftRotationMin</td> <td style="text-align: right;">13.94%</td> <td style="text-align: right;">-1557.68</td> <td id="analysis-downswingrotmin" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">impactGripSpeed</td> <td style="text-align: right;">11.20%</td> <td style="text-align: right;">5.93</td> <td id="analysis-gripspeed" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">addressHandFirst</td> <td style="text-align: right;">10.05%</td> <td style="text-align: right;">-6.04</td> <td id="analysis-handfirst" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">topFaceAngleToHorizontal</td> <td style="text-align: right;">9.96%</td> <td style="text-align: right;">16.13</td> <td id="analysis-topfacehoriz" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">halfwaybackFaceAngleToVertical</td> <td style="text-align: right;">8.97%</td> <td style="text-align: right;">-22.03</td> <td id="analysis-halfbackfacevert" style="text-align: right;">---</td> </tr>
-              <tr> <td style="text-align: left;">addressLieAngle</td> <td style="text-align: right;">8.94%</td> <td style="text-align: right;">41.55</td> <td id="analysis-lieangle" style="text-align: right;">---</td> </tr>
+              <!-- JSによって動的に生成される or 初期メッセージ -->
+              <tr><td colspan="4" style="text-align: center;">スイング判定ボタンを押して分析結果を表示します。</td></tr>
             </tbody>
          </table>
       </div>
     </div>
-  </div>
-  <!-- ▲▲▲ スイングクラスタ判定セクション ▲▲▲ -->
+
+  </div> <!-- swing-analysis-section の閉じタグ -->
+  <!-- ▲▲▲ ここまで大幅変更 ▲▲▲ -->
+
 
   <!-- JS読込 -->
   <script src="/js/dashboard.js"></script>
-  <!-- ▼▼▼ body閉じタグ直前のscriptタグは不要なので削除 ▼▼▼ -->
-  <script src="http://localhost:35729/livereload.js"></script>
+  <!-- LiveReload用スクリプト（開発時のみ） -->
+  <!-- <script src="http://localhost:35729/livereload.js"></script> -->
 </body>
 </html>

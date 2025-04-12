@@ -91,7 +91,7 @@ body {
 }
 
 /* ============================== */
-/* メトリック行と詳細グリッド       */
+/* メトリック行と詳細グリッド         */
 /* ============================== */
 .metric-row {
   display: grid;
@@ -499,7 +499,7 @@ margin: 4 0 0 0;
 }
 
 .metric-label {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -686,11 +686,23 @@ margin: 4 0 0 0;
   color: var(--text-secondary);
 }
 
-.metrics-row {
-  display: flex;
-  flex-wrap: wrap; /* スマホ対応で折り返しもOKにしとく */
-  gap: 1rem;        /* カード間の余白 */
-  justify-content: space-between; /* いい感じに散らす */
+/* 
+/* .metrics-row {
+/*   display: flex;
+/*   flex-wrap: wrap; /* スマホ対応で折り返しもOKにしとく */
+/*   gap: 1rem;        /* カード間の余白 */
+/*   justify-content: space-between; /* いい感じに散らす */
+/* }
+
+
+/* 新しい定義: スイングタイプ情報コンテナ内の metrics-row */
+.swing-type-info-container .metrics-row {
+  display: grid; /* display を grid に変更 */
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* 他と同じレスポンシブな列設定 */
+  gap: 8px;           /* 他と同じカード間の隙間 */
+  padding: 2px 0;    /* グリッドの上下に少し余白 */
+  margin-top: 2px;
+  background-color: transparent; /* 背景色はカード自体にあるので不要 */
 }
 
 .metric-card {
@@ -702,6 +714,129 @@ margin: 4 0 0 0;
   text-align: center;
 }
 
+/* ============================== */
+/* 詳細分析テーブルの列幅調整       */
+/* ============================== */
+.detailed-analysis-section .data-table {
+  table-layout: fixed; /* 列幅の計算方法を固定に */
+  width: 100%;         /* テーブル全体の幅を100%に */
+}
+
+/* 各列の幅を指定 (合計100%になるように調整) */
+.detailed-analysis-section .data-table th:nth-child(1),
+.detailed-analysis-section .data-table td:nth-child(1) {
+  width: 10%; /* 1列目: 指標名 (広めに) */
+  text-align: left !important; /* 左揃えを強制 */
+   overflow-wrap: break-word; /* 長い場合に折り返す */
+   word-break: break-all; /* 必要なら単語の途中でも改行 */
+}
+
+.detailed-analysis-section .data-table th:nth-child(2),
+.detailed-analysis-section .data-table td:nth-child(2) {
+  width: 10%; /* 2列目: 寄与度 (%) (少し狭めに) */
+   text-align: right !important; /* 右揃え */
+}
+
+.detailed-analysis-section .data-table th:nth-child(3),
+.detailed-analysis-section .data-table td:nth-child(3) {
+  width: 10%; /* 3列目: 目標数値 (少し狭めに) */
+   text-align: right !important; /* 右揃え */
+}
+
+.detailed-analysis-section .data-table th:nth-child(4),
+.detailed-analysis-section .data-table td:nth-child(4) {
+  width: 10%; /* 4列目: あなたの数値 (少し狭めに) */
+   text-align: right !important; /* 右揃え */
+}
 
 
+
+/* ============================== */
+/* 新しいスイング分析セクション     */
+/* ============================== */
+
+/* ▼▼▼ swing-type-section内のスタイル名を変更したため、こちらも修正 ▼▼▼ */
+.swing-type-metrics-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 4px;
+  gap: 2px;
+  background-color: var(--bg-dark);
+}
+
+.swing-type-metric-box {
+  background-color: var(--bg-card);
+  padding: 16px 10px;
+  text-align: center;
+  min-width: 100px;
+  border-radius: 4px;
+  margin: 10px 0; /* 上下の空間 */
+  flex: 1; /* 横幅を均等割り付け */
+  min-width: 120px; /* 最小幅 */
+}
+/* ▲▲▲ ここまで swing-type-section 内のスタイル修正 ▲▲▲ */
+
+
+/* ▼▼▼ ここから新しい分析セクション用のスタイルを追加 ▼▼▼ */
+
+.swing-analysis-section .sub-section-title {
+  /* 既存の .sub-section-title スタイルを継承しつつ、必要なら上書き */
+  font-size: 16px; /* 少しだけ大きく */
+  padding-left: 8px;
+  margin-bottom: 10px; /* 下の余白を少し調整 */
+  border-left: 4px solid var(--accent-color);
+  color: var(--text-primary); /* 白文字に */
+  font-weight: 400;
+}
+
+/* グリッドレイアウトのコンテナ */
+.result-grid {
+  display: grid;
+  /* 画面幅に応じて列数を自動調整 */
+  /* minmax(150px, 1fr): 各列の最小幅は150px、最大は利用可能なスペースを均等分割 */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px; /* カード間の隙間 */
+}
+
+/* 各数値カードのスタイル */
+.result-card {
+  background-color: var(--bg-card); /* 背景色 */
+  border-radius: 4px;              /* 角丸 */
+  padding: 10px 12px;              /* 内側の余白 */
+  text-align: center;              /* 文字中央揃え */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* 軽い影 */
+  min-height: 65px; /* カードの高さをある程度揃える */
+  display: flex; /* ラベルと値を縦に並べるため */
+  flex-direction: column;
+  justify-content: center; /* 上下中央揃え */
+}
+
+/* カード内のラベル（指標名） */
+.result-card .label {
+  font-size: 11px;            /* 少し小さく */
+  color: var(--text-secondary); /* 薄い色 */
+  text-transform: uppercase;  /* 大文字に */
+  margin-bottom: 4px;         /* 値との間の余白 */
+  line-height: 1.3;
+  font-weight: 300;
+}
+
+/* カード内の値（数値） */
+.result-card .value {
+  font-size: 22px;            /* 少し大きく */
+  color: var(--text-primary);   /* 白文字 */
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+/* 判定結果表示エリア（ボタン横）のスタイル調整 */
+#judged-result-display {
+  /* 必要に応じて追加のスタイル */
+  padding: 5px 10px;
+  background-color: var(--bg-card);
+  border-radius: 4px;
+}
+
+/* ▲▲▲ ここまで新しい分析セクション用のスタイルを追加 ▲▲▲ */
 
