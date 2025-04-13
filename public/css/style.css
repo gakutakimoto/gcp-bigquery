@@ -1,5 +1,5 @@
 /* ============================== */
-/* 変数定義と全体のリセット        */
+/* 1. 変数定義と全体のリセット     */
 /* ============================== */
 :root {
   --bg-dark: #0a0e1a;
@@ -12,7 +12,7 @@
   --success-color: #22c55e;
   --warning-color: #fbbf24;
   --table-header-bg: #1a2234;
-  --table-row-hover: #4dc9ff; /* ネイビーブルー */
+  --table-row-hover: #4dc9ff;
   --table-stripe-color: rgba(30, 40, 70, 0.3);
 }
 
@@ -23,7 +23,7 @@
 }
 
 /* ============================== */
-/* 基本レイアウトとフォント設定     */
+/* 2. 基本レイアウトとフォント設定  */
 /* ============================== */
 body {
   font-family: 'Oswald', sans-serif;
@@ -35,79 +35,121 @@ body {
   font-size: 14px;
 }
 
-.container {
+.container { /* 現在は未使用ですが、将来的に使う可能性あり */
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* ============================== */
-/* ヘッダーとロゴ部分               */
+/* 3. ヘッダー                   */
 /* ============================== */
 .header {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-  padding-bottom: 6px;
+  padding: 15px 0 6px 0; /* 上下のpadding調整 */
   border-bottom: 1px solid var(--border-color);
+  position: sticky; /* ヘッダー固定 */
+  top: 0;
+  z-index: 100;
+  background-color: var(--bg-dark); /* 固定時の背景 */
 }
 
-.header h1 {
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  margin-bottom: 5px;
-}
-
-.subheader {
+.logo-line { /* ロゴと最終更新日を横並び */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
-  color: var(--text-secondary);
 }
 
-.logo-area {
+.logo-area { /* ロゴ画像とテキスト */
   display: flex;
   align-items: center;
-  margin-bottom: px;
 }
 
 .logo-area img {
   width: 60px;
   height: 60px;
-  margin-right: 15px;
+  margin-right: 12px;
 }
 
-.dashboard-title {
-  font-size: 20px;
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-size: 32px;
   font-weight: 400;
+  color: white;
+  line-height: 1.2;
 }
 
+.logo-subtitle {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+.last-updated {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ============================== */
+/* 4. ユーザーステータス          */
+/* ============================== */
 .user-stats {
   font-size: 16px;
   color: var(--text-secondary);
   margin-top: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 6px; /* 下との間隔調整 */
 }
 
 /* ============================== */
-/* メトリック行と詳細グリッド         */
+/* 5. メインメトリクスカード (上段3つ) */
 /* ============================== */
 .metric-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 10px; /* カード間の隙間 */
+  margin-bottom: 5px; /* 下のタイトルとの間隔 */
 }
 
-.detailed-metrics {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+.metric-row .metric-card { /* カード共通スタイルを適用しつつ上書き */
+  background-color: var(--bg-card);
+  border-radius: 4px;
+  padding: 1rem; /* 内側の余白 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 85px; /* 高さを指定 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
-.section-title {
+.metric-row .metric-card .metric-label { /* ラベルのスタイル */
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.metric-row .metric-card .metric { /* 数値のスタイル */
+  font-size: 36px;
+  font-weight: 400;
+  color: white;
+  line-height: 1.1;
+  margin: 0;
+}
+
+/* ============================== */
+/* 6. サブメトリクスカード (下段5つ) */
+/* ============================== */
+.section-title { /* セクションタイトル共通 */
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 300;
@@ -116,119 +158,110 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-/* ============================== */
-/* ダッシュボードグリッドとカード   */
-/* ============================== */
-.dashboard-grid {
+.detailed-metrics {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 10px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px; /* カード間の隙間 */
+  margin-bottom: 20px;
 }
 
-.card {
+.detailed-metrics .metric-card { /* カード共通スタイルを適用しつつ上書き */
   background-color: var(--bg-card);
   border-radius: 4px;
-  padding: 12px;
+  padding: 1rem; /* 内側の余白 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  height: 80px;
+  height: 65px; /* 高さを指定 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0px;
-}
-
-.metric-card {
   text-align: center;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-  width: 100%;
-}
-
-.card-title {
-  font-size: 12px;
+.detailed-metrics .metric-card .metric-label { /* ラベルのスタイル */
+  font-size: 13px;
   font-weight: 300;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin-bottom: 4px; /* 数値との間隔調整 */
 }
 
-.card-full {
-  grid-column: span 12;
-}
-
-.card-large {
-  grid-column: span 8;
-}
-
-.card-medium {
-  grid-column: span 6;
-}
-
-.card-small {
-  grid-column: span 4;
+.detailed-metrics .metric-card .metric { /* 数値のスタイル */
+  font-size: 28px;
+  font-weight: 300;
+  color: white;
+  line-height: 1.1;
+  margin: 0;
 }
 
 /* ============================== */
-/* データテーブルスタイル修正         */
+/* 7. データ一覧テーブル          */
 /* ============================== */
-.data-table {
+.table-section {
+  margin-top: 10px; /* 上との間隔 */
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 15px; /* ページネーションとの間隔 */
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.data-table { /* テーブル共通スタイル */
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
   background-color: var(--bg-card);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 4px; /* table-container側にあるので不要かも */
+  overflow: hidden; /* table-container側にあるので不要かも */
 }
 
 .data-table th,
 .data-table td {
-  padding: 4px 6px;
-  text-align: right;
+  padding: 6px 8px; /* 行の高さ (上下パディングで調整) */
+  text-align: right; /* デフォルトは右揃え */
   border-bottom: 1px solid var(--border-color);
-  white-space: nowrap; /* テキストの折り返しを防止 */
+  white-space: nowrap; /* 基本的に折り返さない */
 }
 
-.data-table th:first-child,
-.data-table td:first-child {
-  text-align: center; /* ID列は中央揃え */
-}
-
-.data-table th {
+.data-table th { /* ヘッダー共通スタイル */
   background-color: var(--table-header-bg);
   color: var(--text-primary);
   font-weight: 400;
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 13px; /* 少し小さく */
   letter-spacing: 0.5px;
   position: sticky;
-  top: 0;
-  z-index: 10;
+  top: 0; /* ヘッダー固定する場合はヘッダーの高さ分ずらす必要あり (現状は0) */
+  z-index: 90; /* ヘッダーよりは下 */
 }
 
-.data-table tbody tr:nth-child(odd) {
+/* データ一覧テーブル特有のスタイル */
+.table-section .data-table th:first-child, /* ID列 */
+.table-section .data-table td:first-child {
+  text-align: center;
+}
+
+.table-section .data-table tbody tr:nth-child(odd) { /* 縞模様 */
   background-color: var(--table-stripe-color);
 }
 
-.data-table tbody tr:hover {
+.table-section .data-table tbody tr:hover { /* ホバー効果 */
   background-color: var(--table-row-hover);
 }
 
-.data-table th.sortable {
+.table-section .data-table th.sortable { /* ソート可能列 */
   cursor: pointer;
   position: relative;
-  padding-right: 18px; /* 矢印のスペースを確保 */
+  padding-right: 18px;
 }
 
-.data-table th.sortable::after {
+.table-section .data-table th.sortable::after { /* ソート矢印 */
   content: '▼';
   font-size: 10px;
   position: absolute;
@@ -238,30 +271,15 @@ body {
   opacity: 0.5;
 }
 
-.table-section {
-  margin-top: 20px;
-  overflow-x: auto; /* 横スクロール可能に */
-  max-width: 100%;
-}
-
-/* テーブルスクロールのスタイル */
-.table-container {
-  overflow-x: auto;
-  max-width: 100%;
-  margin-bottom: 4px;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 /* ============================== */
-/* ページネーションスタイル修正     */
+/* 8. ページネーション            */
 /* ============================== */
 .pagination {
   display: flex;
   justify-content: center;
   gap: 6px;
-  margin-top: 2px;
-  flex-wrap: wrap; /* 必要に応じて折り返し */
+  margin-top: 10px; /* テーブルとの間隔 */
+  flex-wrap: wrap;
 }
 
 .pagination-btn {
@@ -302,82 +320,12 @@ body {
 }
 
 /* ============================== */
-/* チャートコンテナとメトリック     */
+/* 9. スイングタイプ選択エリア     */
 /* ============================== */
-.chart-container {
-  height: 180px;
-  margin-top: 8px;
-  overflow: hidden;
-}
-
-.metric {
-  font-size: 32px;
-  margin: 0;
-  line-height: 1.1;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  color: white;
-  margin-bottom: 6px;
-}
-
-.metric-small {
-  font-size: 32px;
-}
-
-.metric-label {
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 300;
-  margin-bottom: 6px;
-}
-
-/* ============================== */
-/* ボタン                         */
-/* ============================== */
-.btn {
-  background-color: var(--accent-color);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-family: 'Oswald', sans-serif;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn:hover {
-  background-color: #3db8f0;
-  transform: scale(1.05);
-}
-
-.btn-select {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-family: 'Oswald', sans-serif;
-  font-weight: 400;
-}
-
-/* ============================== */
-/* セクションとクラスタ関連         */
-/* ============================== */
-/* スイングタイプセクション用スタイル */
 .swing-type-section {
-  margin-top: 10px;
-  margin-bottom: 0px;
+  margin-top: 24px; /* 上との間隔 */
 }
 
-/* スイングタイプセレクター */
 .swing-type-selector {
   margin-bottom: 10px;
   width: 100%;
@@ -401,699 +349,379 @@ body {
   background-position: right 10px center;
   transition: all 0.3s ease;
 }
-
 .swing-type-dropdown:hover {
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(77, 201, 255, 0.1);
 }
-
 .swing-type-dropdown:focus {
   outline: none;
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px rgba(77, 201, 255, 0.2);
 }
 
-/* スイングタイプ情報コンテナ */
-.swing-type-info-container {
+.swing-type-info-container { /* タイプ詳細全体 */
   background-color: var(--bg-card);
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 30px; /* 次のセクションとの間隔 */
 }
 
-/* スイング基本情報行 */
-.swing-info-row {
+.swing-info-row { /* 上部のタイプ名/クラブ種別など */
   display: grid;
   grid-template-columns: 1fr 1fr 2fr;
-  gap: 2px;
-  margin-bottom: 2px;
-  background-color: var(--bg-dark);
+  gap: 1px; /* 隙間を詰める */
+  background-color: var(--bg-dark); /* 隙間の色 */
+  padding-bottom: 1px; /* 下側の線 */
 }
 
 .swing-info-box {
   background-color: var(--bg-card);
-  padding: 4px 10px; /* ← 上下だけギュッと！ */
+  padding: 8px 10px; /* 少し余白を */
   text-align: center;
 }
 
-.swing-info-box-wide {
-  grid-column: span 1;
-}
-
 .info-label {
-  font-size: 12px;
+  font-size: 11px; /* 少し小さく */
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .info-value {
-  font-size: 14px;
+  font-size: 16px; /* 少し大きく */
   font-weight: 400;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
-/* スイング概要 */
-.swing-description {
-  padding: 10px;
+.swing-description { /* スイングタイプ概要(選択エリア内) */
+  padding: 15px;
   font-size: 14px;
-  line-height: 1;
+  line-height: 1.6;
   color: var(--text-primary);
-  background-color: var(--bg-card);
+  /* background-color: var(--bg-card); */ /* コンテナと同じなので不要 */
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
 
-/* サブセクションタイトル */
-.sub-section-title {
-  font-size: 14px;
-  font-weight: 400;
+.swing-type-info-container .sub-section-title { /* 選択タイプの成功指標タイトル */
+  font-size: 13px; /* 少し小さく */
+  font-weight: 300;
   color: var(--text-secondary);
-margin: 4 0 0 0;
-  padding-left: 4px;
-  border-left: 4px solid var(--accent-color);
+  margin: 15px 15px 10px 15px; /* 周囲のマージン調整 */
+  padding-left: 8px;
+  border-left: 3px solid var(--accent-color);
   letter-spacing: 0.5px;
+  border-bottom: none; /* 下線は不要 */
 }
 
-
-/* メトリクス行 */
-.metrics-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-    margin-top: 4px; /* ← ここ追加 */
-  grid-template-columns: repeat(5, 1fr);
-  gap: 2px;
-  background-color: var(--bg-dark);
-}
-
-.metric-box {
-  background-color: var(--bg-card);
-  padding: 16px 10px; /* ← 上下に余裕を！ */
-  text-align: center;
-  min-width: 100px;
-    /* flex: 1;*/ /* ← コメントアウト または 行ごと削除 */
-  border-radius: 4px;
-    margin: 10px 0; /* ← 上下の空間を追加！ */
-}
-
-.metric-label {
-  font-size: 14px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: px;
-}
-
-.metric-value {
-  font-size: 24px;
-  font-weight: 300;
-  color: var(--text-primary);
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .swing-info-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .swing-info-box-wide {
-    grid-column: span 2;
-  }
-  
-  .metrics-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .metric-box:last-child {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 480px) {
-  .swing-info-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .swing-info-box-wide {
-    grid-column: span 1;
-  }
-  
-  .metrics-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .metric-box:last-child {
-    grid-column: span 1;
-  }
-}
-
-/* ============================== */
-/* 計測数値表示グリッド (新規追加) */
-/* ============================== */
-.measured-values-grid {
+.swing-type-metrics-row { /* 選択タイプの成功指標数値 */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
-  margin-top: 15px;
-}
-
-/* measured-values-grid 内の metric-box スタイル */
-.measured-values-grid .metric-box {
-  /* ▼▼▼ コメントを解除し、必要なスタイルを記述 ▼▼▼ */
-  background-color: var(--bg-card); /* 背景色 */
-  padding: 8px 10px;               /* 内側の余白 (上下8px, 左右10px) */
-  border-radius: 4px;              /* 角丸 */
-  text-align: center;              /* 文字中央揃え */
-  /* min-height: 60px; */         /* 最小高さ (必要ならコメント解除) */
-  max-width: 200px;                /* ★★★ 最大幅を設定 (例: 200px) ★★★ */
-  /* width: 100%; */              /* width: 100% は指定しない */
-  /* flex: 1; */                   /* flex: 1 も指定しない */
-  /* ▲▲▲ ここまで ▲▲▲ */
-}
-
-.measured-values-grid .metric-box .label {
-   /* 既存の .metric-box .label スタイル適用確認 */
-   /* font-size: 10px; */
-   /* ... */
-}
-
-.measured-values-grid .metric-box .value {
-   /* 既存の .metric-box .value スタイル適用確認 */
-   /* font-size: 24px; ← 数値の大きさ */
-   /* ... */
-   line-height: 1.2; /* 行間を少し詰める */
-}
-
-/* ============================== */
-/* モデルとメトリックボックス       */
-/* ============================== */
-.swing-model-section {
-  margin-top: 10px;
-}
-
-.model-info {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 10px 0;
-  font-size: 12px;
-}
-
-.model-ranges {
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.model-metrics {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.metric-box {
-  background-color: var(--bg-card);
-  padding: 2px;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.metric-box .value {
-  font-size: 24px;
-  font-weight: 300;
-  margin: 0px 0;
-}
-
-.metric-box .label {
-  font-size: 12px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-/* ============================== */
-/* テキストブロックとロゴ周り       */
-/* ============================== */
-.overview-text {
-  background-color: var(--bg-card);
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-top: 10px;
-  line-height: 1.6;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-img {
-  width: 40px;
-  height: auto;
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.logo-title {
-  font-size: 36px;
-  font-weight: 400;
-  color: white;
-  line-height: 1.2;
-}
-
-.logo-subtitle {
-  font-size: 14px;
-  font-weight: 300;
-  color: var(--text-secondary);
-  line-height: 1.2;
-}
-
-.logo-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.last-updated {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* 
-/* .metrics-row {
-/*   display: flex;
-/*   flex-wrap: wrap; /* スマホ対応で折り返しもOKにしとく */
-/*   gap: 1rem;        /* カード間の余白 */
-/*   justify-content: space-between; /* いい感じに散らす */
-/* }
-
-
-/* 新しい定義: スイングタイプ情報コンテナ内の metrics-row */
-.swing-type-info-container .metrics-row {
-  display: grid; /* display を grid に変更 */
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* 他と同じレスポンシブな列設定 */
-  gap: 8px;           /* 他と同じカード間の隙間 */
-  padding: 2px 0;    /* グリッドの上下に少し余白 */
-  margin-top: 2px;
-  background-color: transparent; /* 背景色はカード自体にあるので不要 */
-}
-
-.metric-card {
-  flex: 1;
-  min-width: 150px; /* 幅が小さすぎないように */
-  background-color: #1e1e2f;
-  border-radius: 4px;
-  padding: 1rem;
-  text-align: center;
-}
-
-/* ============================== */
-/* 詳細分析テーブルの列幅調整       */
-/* ============================== */
-.detailed-analysis-section .data-table {
-  table-layout: fixed; /* 列幅の計算方法を固定に */
-  width: 100%;         /* テーブル全体の幅を100%に */
-}
-
-/* 各列の幅を指定 (合計100%になるように調整) */
-.detailed-analysis-section .data-table th:nth-child(1),
-.detailed-analysis-section .data-table td:nth-child(1) {
-  width: 20%; /* 1列目: 指標名 (広めに) */
-  text-align: left !important; /* 左揃えを強制 */
-   overflow-wrap: break-word; /* 長い場合に折り返す */
-   word-break: break-all; /* 必要なら単語の途中でも改行 */
-}
-
-.detailed-analysis-section .data-table th:nth-child(2),
-.detailed-analysis-section .data-table td:nth-child(2) {
-  width: 10%; /* 2列目: 寄与度 (%) (少し狭めに) */
-   text-align: right !important; /* 右揃え */
-}
-
-.detailed-analysis-section .data-table th:nth-child(3),
-.detailed-analysis-section .data-table td:nth-child(3) {
-  width: 10%; /* 3列目: 目標数値 (少し狭めに) */
-   text-align: right !important; /* 右揃え */
-}
-
-.detailed-analysis-section .data-table th:nth-child(4),
-.detailed-analysis-section .data-table td:nth-child(4) {
-  width: 10%; /* 4列目: あなたの数値 (少し狭めに) */
-   text-align: right !important; /* 右揃え */
-}
-
-
-
-/* ============================== */
-/* 新しいスイング分析セクション     */
-/* ============================== */
-
-/* ▼▼▼ swing-type-section内のスタイル名を変更したため、こちらも修正 ▼▼▼ */
-.swing-type-metrics-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 4px;
-  gap: 2px;
-  background-color: var(--bg-dark);
+  grid-template-columns: repeat(5, 1fr); /* 5列 */
+  gap: 1px;
+  background-color: var(--bg-dark); /* 隙間の色 */
+  padding: 0 1px 1px 1px; /* 枠線のように見せる */
 }
 
 .swing-type-metric-box {
   background-color: var(--bg-card);
-  padding: 4px 10px;
+  padding: 10px 8px; /* 余白調整 */
   text-align: center;
-  min-width: 100px;
-  border-radius: 4px;
-  margin: 6px 0; /* 上下の空間 */
-  flex: 1; /* 横幅を均等割り付け */
-  min-width: 120px; /* 最小幅 */
 }
-/* ▲▲▲ ここまで swing-type-section 内のスタイル修正 ▲▲▲ */
-
-
-/* ▼▼▼ ここから新しい分析セクション用のスタイルを追加 ▼▼▼ */
-
-.swing-analysis-section .sub-section-title {
-  /* 既存の .sub-section-title スタイルを継承しつつ、必要なら上書き */
-  font-size: 16px; /* 少しだけ大きく */
-  padding-left: 8px;
-  margin-bottom: 10px; /* 下の余白を少し調整 */
-  border-left: 4px solid var(--accent-color);
-  color: var(--text-primary); /* 白文字に */
-  font-weight: 400;
+.swing-type-metric-box .metric-label { /* ラベル */
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
 }
-
-
-/* ▼▼▼ 新しい数値カードグリッドのスタイル ▼▼▼ */
-
-/* 上段 (4列) のグリッドコンテナ */
-.result-grid-top {
-  display: grid;
-  /* 常に4列で表示 */
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px; /* カード間の隙間 */
-  margin-bottom: 8px; /* 下段との間に少し隙間を空ける */
-}
-
-/* 下段 (7列) のグリッドコンテナ */
-.result-grid-bottom {
-  display: grid;
-  /* 常に7列で表示 */
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px; /* カード間の隙間 */
-}
-
-/* カード自体のスタイル (既存のものを流用・確認) */
-.result-card {
-  background-color: var(--bg-card); /* 背景色 */
-  border-radius: 4px;              /* 角丸 */
-  padding: 10px 12px;              /* 内側の余白 */
-  text-align: center;              /* 文字中央揃え */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* 軽い影 */
-  min-height: 40px; /* カードの高さをある程度揃える */
-  display: flex; /* ラベルと値を縦に並べるため */
-  flex-direction: column;
-  justify-content: center; /* 上下中央揃え */
-}
-
-/* カード内のラベル（指標名）(既存のものを流用・確認) */
-.result-card .label {
-  font-size: 11px;            /* 少し小さく */
-  color: var(--text-secondary); /* 薄い色 */
-  text-transform: uppercase;  /* 大文字に */
-  margin-bottom: 4px;         /* 値との間の余白 */
-  line-height: 1.3;
+.swing-type-metric-box .metric-value { /* 数値 */
+  font-size: 20px; /* サイズ調整 */
   font-weight: 300;
+  color: var(--text-primary);
 }
 
-/* カード内の値（数値）(既存のものを流用・確認) */
-.result-card .value {
-  font-size: 22px;            /* 少し大きく */
-  color: var(--text-primary);   /* 白文字 */
-  font-weight: 400;
-  line-height: 1.1;
-}
-
-/* ▼▼▼ レスポンシブ対応（画面幅が狭い場合） ▼▼▼ */
-/* 例: 画面幅が 992px 以下の場合 */
-@media (max-width: 992px) {
-  .result-grid-top {
-    /* 2列にする */
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .result-grid-bottom {
-     /* 画面幅に応じて自動で折り返す (最小120px程度) */
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  }
-}
-
-/* 例: 画面幅が 768px 以下の場合 */
+/* スイングタイプ選択エリア レスポンシブ */
 @media (max-width: 768px) {
-   .result-grid-top {
-     /* 画面幅に応じて自動で折り返す (最小120px程度) */
-     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-   }
-   /* .result-grid-bottom は上の設定 (auto-fit) が効いているのでそのままでもOK */
+  .swing-info-row { grid-template-columns: 1fr 1fr; }
+  .swing-info-box-wide { grid-column: span 2; }
+  .swing-type-metrics-row { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
 }
-
-/* 例: 画面幅が 480px 以下の場合 (さらに狭い場合) */
 @media (max-width: 480px) {
-  .result-grid-top,
-  .result-grid-bottom {
-    /* 1列にする */
-    grid-template-columns: 1fr;
-  }
+  .swing-info-row { grid-template-columns: 1fr; }
+  .swing-info-box-wide { grid-column: span 1; }
 }
 
-/* ▲▲▲ ここまで新しい数値カードグリッドのスタイル ▲▲▲ */
-
-/* ▼▼▼ 上段・下段カードの文字スタイル調整 ▼▼▼ */
-
-/* --- 上段カードのスタイル調整 --- */
-/* 上段の「数値」を少し大きく、太くする */
-.result-grid-top .result-card .value {
-  font-size: 32px; /* 例: 現在の 22px より大きく */
-  font-weight: 300; /* 例: 現在の 400 より太く */
+/* ============================== */
+/* 10. スイング分析セクション      */
+/* ============================== */
+.swing-analysis-section {
+  margin-top: 40px; /* 上との間隔 */
 }
 
-/* 上段の「ラベル」も少し目立たせる (任意) */
-.result-grid-top .result-card .label {
-  font-size: 14px; /* 例: 現在の 11px より少し大きく */
-  /* font-weight: 400; */ /* 必要なら太さも調整 */
-}
-
-/* --- 下段カードのスタイル調整 (現状維持または少し控えめに) --- */
-/* 下段の「数値」は現在のスタイルを維持 (変更しない場合はこのブロック不要) */
-.result-grid-bottom .result-card .value {
-  font-size: 22px; /* 現在のデフォルト値 */
-  font-weight: 300; /* 現在のデフォルト値 */
-}
-
-/* 下段の「ラベル」も現在のスタイルを維持 (変更しない場合はこのブロック不要) */
-.result-grid-bottom .result-card .label {
-  font-size: 10px; /* 現在のデフォルト値 */
-  font-weight: 300; /* 現在のデフォルト値 */
-}
-
-/* ▲▲▲ ここまで文字スタイル調整 ▲▲▲ */
-
-/* ▼▼▼ 上段カードの背景色調整（少し明るい色を試す） ▼▼▼ */
-
-.result-grid-top .result-card {
-  /* background-color: var(--bg-card); */ /* 元の色はコメントアウト */
-  background-color: #1a2234; /* テーブルヘッダーの色を試す */
-  /* background-color: #1e2533; */ /* ボーダーの色を試す */
-  /* ↑ どちらか、または別の色コードを指定してください */
-
-  /* 枠線オプション (必要ならコメント解除) */
-  /* border: 1px solid var(--accent-color); */
-  /* border-left: 3px solid var(--accent-color); */
-}
-
-/* ▲▲▲ ここまで背景色調整 ▲▲▲ */
-
-
-/* 各数値カードのスタイル */
-.result-card {
-  background-color: var(--bg-card); /* 背景色 */
-  border-radius: 4px;              /* 角丸 */
-  padding: 10px 12px;              /* 内側の余白 */
-  text-align: center;              /* 文字中央揃え */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* 軽い影 */
-  min-height: 40px; /* カードの高さをある程度揃える */
-  display: flex; /* ラベルと値を縦に並べるため */
-  flex-direction: column;
-  justify-content: center; /* 上下中央揃え */
-}
-
-/* カード内のラベル（指標名） */
-.result-card .label {
-  font-size: 11px;            /* 少し小さく */
-  color: var(--text-secondary); /* 薄い色 */
-  text-transform: uppercase;  /* 大文字に */
-  margin-bottom: 4px;         /* 値との間の余白 */
-  line-height: 1.3;
-  font-weight: 300;
-}
-
-/* カード内の値（数値） */
-.result-card .value {
-  font-size: 22px;            /* 少し大きく */
-  color: var(--text-primary);   /* 白文字 */
+.swing-analysis-section .sub-section-title { /* スイング分析内のタイトル */
+  font-size: 16px;
   font-weight: 400;
-  line-height: 1.1;
+  color: var(--text-primary);
+  margin: 30px 0 15px 0; /* 上下の間隔 */
+  padding-left: 8px;
+  border-left: 4px solid var(--accent-color);
+  letter-spacing: 0.5px;
+  border-bottom: none; /* 下線不要 */
+}
+.swing-analysis-section .sub-section-title:first-of-type {
+  margin-top: 0; /* 最初のタイトルだけ上のマージンなくす */
 }
 
-/* 判定結果表示エリア（ボタン横）のスタイル調整 */
-#judged-result-display {
-  /* 必要に応じて追加のスタイル */
-  padding: 5px 10px;
+/* 判定ボタンと結果表示エリア */
+.judge-action-area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px; /* 下の説明文との間隔を詰める */
+}
+
+#judge-my-swing-button { /* スイング判定ボタン */
+  padding: 10px 20px;
+  font-size: 18px;
+  flex-shrink: 0;
+  line-height: 1.2; /* 高さ揃え用 */
+    background-color: var(--accent-color) !important; 
+      color: white; 
+        border-radius: 6px;
+  /* 基本スタイルは .btn を継承 */
+}
+
+#judged-result-display { /* 判定結果表示 */
+  font-size: 18px;
+  color: var(--text-secondary);
+  background-color: var(--bg-card);
+  padding: 10px 15px;
+  border-radius: 4px;
+  display: flex; /* none は JS で制御 */
+  align-items: center;
+  line-height: 1.2; /* 高さ揃え用 */
+}
+#judged-result-display span:last-child { /* クラスタ名 */
+  color: var(--accent-color);
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+/* 判定結果の説明文 */
+#judged-swing-description {
+  font-size: 16px; /* 少し小さく */
+  line-height: 1.7;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  text-align: left;
+  margin-top: 0px; /* 上の判定結果表示との間隔調整 */
+  margin-bottom: 10px; /* 下の数値ブロックとの間隔 */
+  min-height: calc(1.7em * 2); /* 2行分の高さを確保 (ガタつき防止) */
+}
+
+/* スイング結果数値 / 成功中央値 ブロック */
+.result-block {
+  margin-bottom: 20px;
+}
+
+.result-grid-top { /* 上段4列 */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.result-grid-bottom { /* 下段7列 */
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.result-card { /* 数値カード共通 */
   background-color: var(--bg-card);
   border-radius: 4px;
+  padding: 10px 12px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  min-height: 70px; /* 高さを少し確保 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.result-card .label { /* ラベル */
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  font-weight: 300;
+}
+.result-card .value { /* 数値 */
+  font-size: 22px;
+  color: var(--text-primary);
+  font-weight: 400;
+  line-height: 1.1;
 }
 
-/* ▲▲▲ ここまで新しい分析セクション用のスタイルを追加 ▲▲▲ */
-
-
-
-/* ============================== */
-/* ヘッダー固定 スタイル          */
-/* ============================== */
-
-.header {
-  position: sticky; /* スクロール時に指定位置で固定 */
-  top: 0;           /* 画面の一番上に固定 */
-  z-index: 100;     /* 他の要素より手前に表示 */
-  background-color: var(--bg-dark); /* スクロール時に背景が透けないように */
-  /* 必要であれば、上下のpaddingを調整して高さを確保 */
-padding-top: 15px;
-padding-bottom: 15px; 
+/* 上段カードのスタイル調整 */
+.result-grid-top .result-card {
+  background-color: #1a2234; /* 背景色変更 */
+}
+.result-grid-top .result-card .value {
+  font-size: 28px; /* 少し大きく */
+  font-weight: 400; /* 少し太く */
+}
+.result-grid-top .result-card .label {
+  font-size: 12px; /* 少し大きく */
+}
+/* 下段カードのスタイル調整 */
+.result-grid-bottom .result-card .value {
+  font-size: 22px; /* 少し小さく */
+  font-weight: 300;
+}
+.result-grid-bottom .result-card .label {
+  font-size: 10px;
 }
 
-/* ヘッダー固定に伴い、bodyの最初のpaddingを調整（任意） */
-/* ヘッダーの高さ分だけbodyの上部に余白を設ける場合 */
-/* body { */
-  /* padding-top: 80px; */ /* ヘッダーのおおよその高さに合わせて調整 */
-/* } */
-/* ↑ 上記 body の padding-top は、ヘッダー固定時に */
-/*   ヘッダーと最初のコンテンツ（ユーザーステータス）が */
-/*   重なってしまう場合などに調整してください。 */
-/*   まずはこのコメントアウトのままで試してみてください。 */
-
-
-/* ============================== */
-/* 判定結果の説明文スタイル調整   */
-/* ============================== */
-#judged-swing-description {
-  font-size: 20px; /* ★★★ ここの数値を調整してください ★★★ */
-                   /* 例: 18px や 1.2em など */
-  /* 他にも調整したいスタイルがあればここに追加 */
-  /* 例: color: #e2e8f0; (少し明るい白) */
-  /* 例: margin-bottom: 30px; (下の余白を増やす) */
+/* 数値カード レスポンシブ */
+@media (max-width: 992px) {
+  .result-grid-top { grid-template-columns: repeat(2, 1fr); }
+  .result-grid-bottom { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); } /* 最小幅調整 */
+}
+@media (max-width: 768px) {
+   .result-grid-top { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+}
+@media (max-width: 480px) {
+  .result-grid-top, .result-grid-bottom { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); } /* 1列よりは自動調整 */
 }
 
-
-/* ▼▼▼ メイン/サブメトリクスカードのスタイル調整 ▼▼▼ */
-
-/* --- 上段3つのカード (メインメトリクス) --- */
-
-/* 上段カード自体の高さ調整 */
-.metric-row .metric-card {
-  height: 85px; /* 例: 85px に変更 (お好みで調整) */
+/* 詳細分析テーブル */
+.detailed-analysis-section {
+    margin-bottom: 20px;
 }
-
-/* 上段カード内の「数値」を大きく、太く */
-.metric-row .metric-card .metric {
-  font-size: 36px;  /* 例: 36px (お好みで調整) */
-  font-weight: 400; /* 例: 500 (標準より少し太め) (お好みで調整) */
+.detailed-analysis-section .data-table {
+  table-layout: auto; /* 自動調整 */
+  width: 100%;
 }
-
-/* 上段カード内の「ラベル」を大きく、太く */
-.metric-row .metric-card .metric-label {
-  font-size: 15px;  /* 例: 15px (お好みで調整) */
-  font-weight: 300; /* 例: 400 (標準の太さ) (お好みで調整) */
-}
-
-/* 上段カード間の隙間 */
-.metric-row {
-  gap: 10px; /* 例: 18px (お好みで調整) */
-}
-
-
-/* --- 下段5つのカード (サブメトリクス) --- */
-
-/* 下段カード自体の高さ調整 */
-.detailed-metrics .metric-card {
-  height: 65px; /* 例: 65px に変更 (お好みで調整) */
-}
-
-/* 下段カード内の「数値」を小さく、細く */
-.detailed-metrics .metric-card .metric {
-  font-size: 28px;  /* 例: 28px (お好みで調整) */
-  font-weight: 300; /* 例: 300 (細め) (お好みで調整) */
-}
-
-/* 下段カード内の「ラベル」を小さく、細く */
-.detailed-metrics .metric-card .metric-label {
-  font-size: 13px;  /* 例: 13px (お好みで調整) */
-  font-weight: 300; /* 例: 300 (細め) (お好みで調整) */
-}
-
-/* 下段カード間の隙間 */
-.detailed-metrics {
-  gap: 10px; /* 例: 8px (お好みで調整) */
-}
-
-/* ▲▲▲ ここまでメトリクスカード調整 ▲▲▲ */
-
-
-/* ▼▼▼ 詳細分析テーブル ヘッダー行のスタイル調整 ▼▼▼ */
-
+/* 詳細分析テーブル ヘッダー */
 .detailed-analysis-section .data-table th {
-  background-color: #1e2533; /* 例: 少し濃いめの背景色 (お好みで変更) */
-  c/* olor: var(--accent-color);   /* 例: アクセントカラーの文字色 (お好みで変更) */
-  font-size: 12px;            /* 例: 文字サイズを 13px に (お好みで調整) */
-  font-weight: 400;           /* 例: 文字の太さを 500 (少し太め) に (お好みで調整) */
-  padding-top: 6px;          /* 例: 上下のパディングを 10px に (行の高さ調整) */
-  padding-bottom: 6px;         /* 例: 上下のパディングを 10px に (行の高さ調整) */
-  /* text-align は下の個別指定で上書きされるので、ここでは不要かも */
-  text-transform: none;       /* 例: 大文字変換を解除 (必要なら uppercase) */
-  letter-spacing: 0.3px;      /* 例: 文字間隔を少し調整 (お好みで) */
-  border-bottom: 2px solid var(--accent-color); /* 例: 下線をアクセントカラーで太めに */
-  /* 左右のパディングは既存のルール (.data-table th, td) を継承します */
+  background-color: #1e2533;
+  color: var(--accent-color);
+  font-size: 12px;
+  font-weight: 400;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--accent-color);
+  white-space: normal; /* ヘッダーも折り返し許可 */
 }
-
-/* (特定の列だけ文字揃えを変えたい場合の例 - 既存のルールと重複する可能性があるので確認) */
-/* 既存のルールで text-align が !important で指定されていなければ、こちらで上書き可能 */
-/* 1列目(指標名)と5列目(アドバイス)を左揃えにする */
-.detailed-analysis-section .data-table th:nth-child(1),
+/* 詳細分析テーブル セル共通 */
+.detailed-analysis-section .data-table td {
+    padding: 4px; /* パディング調整 */
+    vertical-align: middle; /* 上下中央揃え */
+}
+/* 詳細分析テーブル 列ごとのスタイル */
+.detailed-analysis-section .data-table th:nth-child(1), /* 指標名 */
 .detailed-analysis-section .data-table td:nth-child(1) {
-  width: 20%;
   text-align: left !important;
   overflow-wrap: break-word;
-  word-break: break-all;
-
-  /* ▼▼▼ ここからフォント調整の例を追加 ▼▼▼ */
-  font-size: 14px;    /* 例: 現在の基本サイズ(14px?)より少し大きく */
-  font-weight: 400;   /* 例: 現在の基本の太さ(300?)より少し太く */
-  /* color: #e2e8f0; */ /* 例: 少し明るい白にする場合など */
-
-/* 2,3,4列目を右揃えにする */
-.detailed-analysis-section .data-table th:nth-child(2),
-.detailed-analysis-section .data-table th:nth-child(3),
-.detailed-analysis-section .data-table th:nth-child(4) {
-  text-align: right;
+  word-break: break-word;
+  font-size: 12px;
+  font-weight: 400;
+  width: 15%; /* 幅を少し広げる */
+}
+.detailed-analysis-section .data-table th:nth-child(2), /* 寄与度 */
+.detailed-analysis-section .data-table td:nth-child(2) {
+   text-align: center !important;
+   width: 12%;
+}
+.detailed-analysis-section .data-table th:nth-child(3), /* 成功者の値 */
+.detailed-analysis-section .data-table td:nth-child(3) {
+   text-align: center!important;
+   width: 12%;
+}
+.detailed-analysis-section .data-table th:nth-child(4), /* あなたの値 */
+.detailed-analysis-section .data-table td:nth-child(4) {
+   text-align: center !important;
+   width: 12%;
+}
+.detailed-analysis-section .data-table th:nth-child(5), /* アドバイス */
+.detailed-analysis-section .data-table td:nth-child(5) {
+   text-align: left !important;
+   white-space: normal !important; /* 折り返し必須 */
+   line-height: 1.5;
+   font-size: 13px;
+   width: 40%; /* 幅を調整 */
 }
 
+/* ============================== */
+/* 11. RTA トグルスイッチ         */
+/* ============================== */
+.rta-toggle-container {
+  display: flex;
+  align-items: center;
+  margin-top: 25px;
+  margin-bottom: 20px;
+}
 
+.rta-toggle-label {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  user-select: none;
+  margin-right: 15px;
+}
 
-/* ▲▲▲ ここまでヘッダー行調整 ▲▲▲ */
+.rta-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
 
+.rta-toggle-checkbox { /* 元のチェックボックスを隠す */
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
 
+.rta-toggle-switch-label { /* スイッチの背景（トラック） */
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #333c57; /* OFFの色 */
+  transition: .4s;
+  border-radius: 26px;
+}
+
+.rta-toggle-switch-label:before { /* スイッチのハンドル */
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.rta-toggle-checkbox:checked + .rta-toggle-switch-label { /* ONの背景色 */
+  background-color: var(--accent-color);
+}
+
+.rta-toggle-checkbox:checked + .rta-toggle-switch-label:before { /* ONのハンドル位置 */
+  transform: translateX(24px);
+}
+
+.rta-toggle-checkbox:focus + .rta-toggle-switch-label { /* フォーカス時 */
+  box-shadow: 0 0 1px var(--accent-color);
+}

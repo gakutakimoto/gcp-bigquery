@@ -13,7 +13,7 @@
       <div class="logo-area">
         <img src="/images/logo.png" alt="M-Tracer Logo" class="logo-img">
         <div class="logo-text">
-          <div class="logo-title">M-tracer AI Swing Data Dashboard</div>
+          <div class="logo-title">M-tracer AI Data Dashboard / Real Time Swing Advisor</div>
           <div class="logo-subtitle">Golf Swing 3D Motion Sensor M-Tracer by Epson</div>
         </div>
       </div>
@@ -43,7 +43,7 @@
   </div>
 
   <!-- サブメトリクス -->
-  <div class="section-title">その他スイング指標 (2025/4月 / 指標中央値)</div>
+  <div class="section-title">指標ごとの傾向値 (2025/4月 / 指標中央値)</div>
   <div class="detailed-metrics metrics-row">
     <div class="card metric-card">
       <div class="metric-label">CLUB PATH</div>
@@ -76,23 +76,19 @@
     <div class="table-container">
       <table class="data-table">
         <thead>
-
-        <!-- ▼▼▼ ここを修正 ▼▼▼ -->
-        <tr>
-          <th class="sortable">id</th>                     <!-- 1. ID -->
-          <th class="sortable">Estimate Carry</th>         <!-- 2. Estimate Carry -->
-          <th class="sortable">Head Speed</th>             <!-- 3. Head Speed -->
-          <th class="sortable">Grip Speed</th>             <!-- 4. Grip Speed (追加) -->
-          <th class="sortable">Club Path</th>              <!-- 5. Club Path -->
-          <th class="sortable">Face Angle</th>             <!-- 6. Face Angle -->
-          <th class="sortable">Face to Path</th>    <!-- 7. Relative Face Angle (追加) -->
-          <th class="sortable">Attack Angle</th>           <!-- 8. Attack Angle -->
-        </tr>
-        <!-- ▲▲▲ ここまで修正 ▲▲▲ -->
-
+          <tr>
+            <th class="sortable">id</th>
+            <th class="sortable">Estimate Carry</th>
+            <th class="sortable">Head Speed</th>
+            <th class="sortable">Grip Speed</th>
+            <th class="sortable">Club Path</th>
+            <th class="sortable">Face Angle</th>
+            <th class="sortable">FaceToPath</th> <!-- Relative Face Angle から変更 -->
+            <th class="sortable">Attack Angle</th>
+          </tr>
         </thead>
         <tbody id="data-table-body">
-          <tr><td colspan="6">データを読み込み中...</td></tr>
+          <tr><td colspan="8">データを読み込み中...</td></tr> <!-- colspan=8 に修正 -->
         </tbody>
       </table>
     </div>
@@ -125,14 +121,10 @@
       <div class="swing-description" id="swing-overview">
         ---
       </div>
-      <!-- ▼▼▼ ここは「スイングタイプによる指標中央値」というタイトルだったが、より正確な表現に変更 ▼▼▼ -->
       <div class="sub-section-title">選択タイプの成功スイング指標中央値</div>
-      <!-- ▼▼▼ metrics-row から swing-type-metrics-row にクラス名変更（スタイル競合防止） ▼▼▼ -->
       <div class="swing-type-metrics-row">
-        <!-- ▼▼▼ metric-box から swing-type-metric-box にクラス名変更 ▼▼▼ -->
         <div class="swing-type-metric-box">
           <div class="metric-label">ESTIMATE CARRY</div>
-          <!-- ▼▼▼ IDをより具体的に変更 ▼▼▼ -->
           <div id="swing-type-estimateCarry" class="metric-value">---</div>
         </div>
         <div class="swing-type-metric-box">
@@ -161,33 +153,30 @@
 
    <h4 class="sub-section-title">スイングをクラスタ分析する</h4>
 
-    <!-- 判定ボタンと結果表示エリア -->
-    <div class="judge-action-area" style="margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
-      <button id="judge-my-swing-button" class="btn" style="padding: 10px 20px; font-size: 18px;">スイング判定</button>
-      <!-- 判定結果表示用 (最初は非表示。JSで表示を制御) -->
-      <div id="judged-result-display" style="display: none; font-size: 22px; color: var(--accent-color);">
-        <span style="color: var(--text-secondary);">あなたのスイングクラスタ分類は ▶ </span>
-        <span id="judged-swing-type-name-new" style="font-weight: 400;">（判定結果）</span>
-      </div>
-    </div>
+   <!-- 判定ボタンと結果表示エリア (RTAスイッチはここから移動) -->
+   <div class="judge-action-area"> <!-- style属性はCSSへ移動 -->
+     <button id="judge-my-swing-button" class="btn">スイング判定</button>
+     <div id="judged-result-display" style="display: none;">
+       <span>あなたのスイングクラスタ分類は ▶ </span>
+       <span id="judged-swing-type-name-new">（判定結果）</span>
+     </div>
+     <!-- RTAトグルスイッチはここから下に移動 -->
+   </div>
 
     <!-- クラスタ説明表示エリア -->
-    <div id="judged-swing-description" class="swing-description" style="margin-top: -10px; margin-bottom: 25px; background-color: transparent; padding: 0; border: none; text-align: left; line-height: 1.6; font-size: 20px;">
+    <div id="judged-swing-description" class="swing-description">
       <!-- JavaScriptによって説明が表示される -->
     </div>
 
-    <!-- ▼▼▼ ここからHTML構造を変更 ▼▼▼ -->
     <!-- スイング結果数値 -->
-    <div class="result-block" style="margin-bottom: 25px;">
-      <h4 class="sub-section-title" style="margin-bottom: 15px;">スイング結果数値</h4>
-      <!-- 上段4つのコンテナ -->
+    <div class="result-block">
+      <h4 class="sub-section-title">スイング結果数値</h4>
       <div class="result-grid-top">
         <div class="result-card"> <div class="label">ESTIMATE CARRY</div> <div class="value" id="result-estimatecarry">---</div> </div>
         <div class="result-card"> <div class="label">HEAD SPEED</div> <div class="value" id="result-headspeed">---</div> </div>
         <div class="result-card"> <div class="label">FACE ANGLE</div> <div class="value" id="result-faceangle">---</div> </div>
         <div class="result-card"> <div class="label">ATTACK ANGLE</div> <div class="value" id="result-attackangle">---</div> </div>
       </div>
-      <!-- 下段7つのコンテナ -->
       <div class="result-grid-bottom">
         <div class="result-card"> <div class="label">CLUB PATH</div> <div class="value" id="result-clubpath">---</div> </div>
         <div class="result-card"> <div class="label">HAND FIRST</div> <div class="value" id="result-handfirst">---</div> </div>
@@ -200,16 +189,14 @@
     </div>
 
     <!-- このクラスタタイプの成功スイング指標中央値 -->
-    <div class="result-block" style="margin-bottom: 25px;">
-      <h4 class="sub-section-title" style="margin-bottom: 15px;">このクラスタタイプの成功スイング指標中央値</h4>
-      <!-- 上段4つのコンテナ -->
+    <div class="result-block">
+      <h4 class="sub-section-title">このクラスタタイプの成功スイング指標中央値</h4>
       <div class="result-grid-top">
         <div class="result-card"> <div class="label">ESTIMATE CARRY</div> <div class="value" id="success-median-estimatecarry">---</div> </div>
         <div class="result-card"> <div class="label">HEAD SPEED</div> <div class="value" id="success-median-headspeed">---</div> </div>
         <div class="result-card"> <div class="label">FACE ANGLE</div> <div class="value" id="success-median-faceangle">---</div> </div>
         <div class="result-card"> <div class="label">ATTACK ANGLE</div> <div class="value" id="success-median-attackangle">---</div> </div>
       </div>
-      <!-- 下段7つのコンテナ -->
       <div class="result-grid-bottom">
         <div class="result-card"> <div class="label">CLUB PATH</div> <div class="value" id="success-median-clubpath">---</div> </div>
         <div class="result-card"> <div class="label">HAND FIRST</div> <div class="value" id="success-median-handfirst">---</div> </div>
@@ -220,39 +207,45 @@
         <div class="result-card"> <div class="label">TOP FACEANGLE</div> <div class="value" id="success-median-topface">---</div> </div>
       </div>
     </div>
-    <!-- ▲▲▲ ここまでHTML構造を変更 ▲▲▲ -->
 
-    <!-- 既存の分析テーブル (変更なし) -->
+    <!-- 既存の分析テーブル -->
     <div class="detailed-analysis-section">
-      <h4 class="sub-section-title" style="margin-bottom: 12px;">成功スイングへの寄与度が高いプロセス指標と目標値</h4>
+      <h4 class="sub-section-title">成功スイングへの寄与度が高いプロセス指標と目標値</h4>
       <div class="table-container">
          <table class="data-table">
             <thead>
               <tr>
-                <th style="text-align: left;">成功寄与スイングプロセス</th>
-                <th style="text-align: right;">寄与度</th>
-                <th style="text-align: right;">成功者の値</th>
+                <th style="text-align: left;">成功寄与 スイングプロセス指標</th>
+                <th style="text-align: right;">寄与度(重要度)</th>
+                <th style="text-align: right;">成功者の中央値</th>
                 <th style="text-align: right;">あなたの数値</th>
                 <th style="text-align: left;">ワンポイントアドバイス</th>
               </tr>
             </thead>
             <tbody id="analysis-table-body">
-              <!-- JSによって動的に生成される or 初期メッセージ -->
               <tr><td colspan="5" style="text-align: center;">スイング判定ボタンを押して分析結果を表示します。</td></tr>
             </tbody>
          </table>
       </div>
-    </div>
+    </div> <!-- detailed-analysis-section の閉じタグ -->
 
-  </div> <!-- swing-analysis-section の閉じタグ -->
+   <!-- ▼▼▼ RTAトグルスイッチをここに移動 ▼▼▼ -->
+   <div class="rta-toggle-container"> <!-- style属性は削除 -->
+     <label for="rta-toggle-checkbox" class="rta-toggle-label">RTA (Real Time Advice)</label>
+     <div class="rta-switch">
+       <input type="checkbox" id="rta-toggle-checkbox" class="rta-toggle-checkbox"> <!-- checked 属性削除 (デフォルトOFF) -->
+       <label for="rta-toggle-checkbox" class="rta-toggle-switch-label"></label>
+     </div>
+   </div>
+   <!-- ▲▲▲ 移動ここまで ▲▲▲ -->
+
+
+ </div> <!-- swing-analysis-section の閉じタグ -->
 
 
   <!-- JS読込 -->
   <script src="/js/dashboard.js"></script>
-    <!-- ▼▼▼ 音声再生用のaudio要素を追加 ▼▼▼ -->
   <audio id="advice-audio" style="display: none;"></audio>
-  <!-- ▲▲▲ 追加ここまで ▲▲▲ -->
-  <!-- LiveReload用スクリプト（開発時のみ） -->
-  <!-- <script src="http://localhost:35729/livereload.js"></script> -->
+
 </body>
 </html>

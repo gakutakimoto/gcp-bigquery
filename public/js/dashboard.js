@@ -5,6 +5,8 @@ let allSwingData = []; let currentPage = 1; const rowsPerPage = 8; let metricsDa
 // let thresholdData = []; // 不要になったのでコメントアウト
 let clusterAnalysisData = {}; let currentRandomSwingData = null;
 let successMediansData = {};
+let isRtaEnabled = false; // RTA ON/OFF状態 (初期値: OFF)
+
 
 // ▼▼▼ 定数定義 (ここにまとめて定義) ▼▼▼
 const swingTypeData = [
