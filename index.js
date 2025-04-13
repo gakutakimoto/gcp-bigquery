@@ -5,11 +5,18 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { BigQuery } = require('@google-cloud/bigquery');
+const OpenAI = require('openai'); // ★★★ OpenAI モジュールを読み込み ★★★
 const livereload = require('livereload');
 const connectLivereload = require('connect-livereload');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// =========================
+// JSONボディパーサーの有効化 (APIにテキストを送るため) ★★★ 追加 ★★★
+// =========================
+app.use(express.json()); // POSTリクエストのbodyをJSONとして解析
+
 
 // =========================
 // ログ出力
@@ -42,6 +49,14 @@ const bigquery = new BigQuery({
   projectId: process.env.BQ_PROJECT_ID,
   credentials: JSON.parse(process.env.BQ_KEY_JSON), // 環境変数からキーを読み込む
 });
+
+// =========================
+// OpenAI クライアント初期化 ★★★ 新規追加 ★★★
+// =========================
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // 環境変数からAPIキーを読み込む
+});
+
 
 // =========================
 // API: 全データ取得 (既存: テーブル用など)
@@ -133,63 +148,161 @@ app.get('/api/metrics', async (req, res) => {
 // ============================
 // API: BigQueryからランダムなスイングデータを1件取得
 // ============================
+// index.js
+
+// ▼▼▼ /api/random-swing の処理を修正 ▼▼▼
 app.get('/api/random-swing', async (req, res) => {
-  console.log('API /api/random-swing が呼び出されました');
+  console.log('API /api/random-swing が呼び出されました (クラスタ指定ランダム版)');
   try {
-    // ★★★ BigQueryでランダムに1行取得するクエリ ★★★
+    // 1. ターゲットとなるクラスタIDをランダムに選択 (0から9の整数)
+    const targetClusterId = Math.floor(Math.random() * 10); // 0から9までのランダムな整数を生成
+    console.log(`ターゲットクラスタID: ${targetClusterId}`);
+
+    // 2. 指定されたクラスタIDを持つデータの中からランダムに1件取得するクエリ
     const query = `
       SELECT
-          -- ↓↓↓↓↓↓ 表示に必要なカラム名をここに正確に列挙してください ↓↓↓↓↓↓
+          -- 必要なカラム名を列挙 (現状維持でOKのはず)
           impactClubPath,
-          impactHandFirst,  -- テーブルにこのカラム名が存在するか確認
+          impactHandFirst,
           impactGripSpeed,
-          downSwingShaftRotationMax, -- テーブルにこのカラム名が存在するか確認
-          halfwaydownFaceAngleToVertical, -- テーブルにこのカラム名が存在するか確認
-          halfwaybackFaceAngleToVertical, -- テーブルにこのカラム名が存在するか確認
-          topFaceAngleToHorizontal, -- テーブルにこのカラム名が存在するか確認
-          -- 必要に応じて他の分析用カラムも追加
-                downSwingShaftRotationMin,  -- これを追加
-      addressHandFirst,           -- これを追加
-      addressLieAngle,            -- これを追加
+          downSwingShaftRotationMax,
+          halfwaydownFaceAngleToVertical,
+          halfwaybackFaceAngleToVertical,
+          topFaceAngleToHorizontal,
+          downSwingShaftRotationMin,
+          addressHandFirst,
+          addressLieAngle,
           impactAttackAngle,
-    estimateCarry, 
-    impactHeadSpeed,
+          estimateCarry,
+          impactHeadSpeed,
           impactFaceAngle,
-          impactLoftAngle, -- 例: 追加
-          maxGripSpeed     -- 例: 追加
-          -- ↑↑↑↑↑↑ 表示に必要なカラム名をここに正確に列挙してください ↑↑↑↑↑↑
+          impactLoftAngle,
+          maxGripSpeed,
+          impactRelativeFaceAngle, -- テーブル表示用に以前追加したカラムも念のため含める
+          swing_cluster_unified -- どのクラスタが選ばれたか確認用に含めても良い
       FROM
-          \`m-tracer-data-dashboard.m_tracer_swing_data.m-tracer-dataset\` -- テーブル名の確認
+          \`m-tracer-data-dashboard.m_tracer_swing_data.m-tracer-dataset\` -- テーブル名を確認
       WHERE
-          -- ランダムサンプリング条件 (調整可能)
-          RAND() < 0.001 -- 全体の0.1%からランダムに選ぶ
-          -- AND impactClubPath IS NOT NULL -- データ品質のための条件 (必要なら)
+          swing_cluster_unified = @clusterId -- ★★★ ランダムに選んだクラスタIDで絞り込む ★★★
+          -- 他に必要な WHERE 条件があればここに追加 (例: AND impactHeadSpeed IS NOT NULL)
       ORDER BY
-          RAND()
-      LIMIT 1
+          RAND() -- 選ばれたクラスタ内でランダムに並び替え
+      LIMIT 1    -- その中から1件だけ取得
     `;
 
     console.log('実行するクエリ:', query);
+    console.log('パラメータ:', { clusterId: targetClusterId });
 
-    const options = { query: query };
+    // クエリオプションにパラメータを設定 (SQLインジェクション対策として推奨)
+    const options = {
+      query: query,
+      params: { clusterId: targetClusterId } // クエリ内の @clusterId に値を設定
+    };
+
+    // クエリ実行
     const [rows] = await bigquery.query(options);
 
+    // 3. 結果の処理
     if (rows.length > 0) {
-      console.log('ランダムなスイングデータを取得:', rows[0]);
+      console.log(`クラスタ ${targetClusterId} からランダムなスイングデータを取得:`, rows[0]);
       res.json(rows[0]); // 取得したデータを返す
     } else {
-      console.warn('/api/random-swing: 条件に合うデータが見つかりませんでした。サンプリング条件を見直してください。');
-      // 何度かリトライするか、エラーを返すなどの考慮も可能
-      res.status(404).json({ error: 'ランダムなスイングデータが見つかりませんでした。' });
+      // もし指定したクラスタIDのデータが0件だった場合の処理
+      console.warn(`/api/random-swing: クラスタ ${targetClusterId} にデータが見つかりませんでした。`);
+      // ここではエラーを返すことにします。
+      // 必要であれば、別のクラスタIDでリトライするなどの処理を追加することも可能です。
+      res.status(404).json({ error: `クラスタ ${targetClusterId} に該当するスイングデータが見つかりませんでした。` });
     }
   } catch (err) {
     console.error('🔥 /api/random-swing エラー:', err);
-    // エラーオブジェクトの内容もログ出力するとデバッグに役立つ
     console.error('エラー詳細:', err.message, err.stack);
     res.status(500).json({ error: 'BigQuery接続またはクエリエラーが発生しました。' });
   }
 });
-// ▲▲▲ ここまで新しいAPIエンドポイントを追加 ▲▲▲
+// ▲▲▲ /api/random-swing の修正ここまで ▲▲▲
+
+
+// ▼▼▼ OpenAI TTS APIを呼び出す新しいエンドポイント ▼▼▼
+// ============================
+// API: テキストから音声を生成
+// ============================
+app.post('/api/generate-speech', async (req, res) => {
+  console.log('API /api/generate-speech が呼び出されました');
+  const textToSpeak = req.body.text; // フロントエンドから送られてくるテキストを取得
+  const voiceOption = req.body.voice || 'nova'; // 声のオプション (デフォルト: alloy)
+
+  if (!textToSpeak) {
+    console.error('音声生成エラー: テキストが指定されていません。');
+    return res.status(400).json({ error: 'テキストを指定してください。' });
+  }
+  if (textToSpeak.length > 4096) { // OpenAIの制限確認
+    console.error('音声生成エラー: テキストが長すぎます。');
+    return res.status(400).json({ error: 'テキストが長すぎます (4096文字以内)。' });
+  }
+
+
+  console.log(`受け取ったテキスト: "${textToSpeak}"`);
+  console.log(`使用する声: ${voiceOption}`);
+
+  try {
+    console.log('OpenAI TTS API 呼び出し開始...');
+    const mp3 = await openai.audio.speech.create({
+      model: "tts-1",         // または "tts-1-hd"
+      voice: voiceOption,     // 声の種類 (alloy, echo, fable, onyx, nova, shimmer)
+      input: textToSpeak,
+      response_format: "opus", // レスポンス形式 (mp3, opus, aac, flac)
+      // speed: 1.0,          // 再生速度 (0.25から4.0、任意)
+    });
+    console.log('OpenAI TTS API 呼び出し成功');
+
+    // ★★★ レスポンスとして音声データをクライアントに送信 ★★★
+    // Content-Type を audio/mpeg に設定
+    res.setHeader('Content-Type', 'audio/mpeg');
+    // ReadableStream をパイプして送信
+    mp3.body.pipe(res);
+
+    // ストリームが終了したらログを出す (デバッグ用)
+    mp3.body.on('end', () => {
+      console.log('音声データの送信完了');
+    });
+    // エラーハンドリング
+    mp3.body.on('error', (err) => {
+        console.error('音声データの送信中にエラー:', err);
+        // エラーが発生した場合、クライアントには既にヘッダーが送信されている可能性があるため、
+        // res.status().json() でのエラー応答は難しい。接続を切断するなどで対応。
+        res.end(); // 接続を閉じる
+    });
+
+
+  } catch (error) {
+    console.error('🔥 OpenAI API エラー:', error);
+    // エラーオブジェクトの内容に応じて、より具体的なエラーメッセージを返す
+    let statusCode = 500;
+    let errorMessage = '音声の生成中にエラーが発生しました。';
+    if (error.response) {
+        // OpenAIからのエラーレスポンスがある場合
+        statusCode = error.response.status;
+        errorMessage = error.response.data?.error?.message || errorMessage;
+        console.error(`エラー詳細 (Status ${statusCode}):`, error.response.data);
+    } else if (error.request) {
+        // リクエストは送られたがレスポンスがない場合
+        errorMessage = 'OpenAI APIからの応答がありませんでした。';
+        console.error('リクエストエラー:', error.request);
+    } else {
+        // リクエスト設定時のエラーなど
+        console.error('設定エラー:', error.message);
+    }
+    // クライアントには汎用的なエラーを返す (ステータスコードは状況に応じて設定)
+    if (!res.headersSent) { // ヘッダーがまだ送信されていなければエラー応答を返す
+         res.status(statusCode).json({ error: errorMessage });
+    } else {
+        console.log("ヘッダー送信済みのため、エラーJSONは返送しません。");
+    }
+  }
+});
+// ▲▲▲ 新しいAPIエンドポイントここまで ▲▲▲
+
+
 
 
 // =========================

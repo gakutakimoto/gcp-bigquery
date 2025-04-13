@@ -131,12 +131,12 @@ body {
   border-radius: 4px;
   padding: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  height: 70px;
+  height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 
 .metric-card {
@@ -185,13 +185,13 @@ body {
   background-color: var(--bg-card);
   border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .data-table th,
 .data-table td {
-  padding: 8px 8px;
+  padding: 4px 6px;
   text-align: right;
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap; /* テキストの折り返しを防止 */
@@ -205,9 +205,9 @@ body {
 .data-table th {
   background-color: var(--table-header-bg);
   color: var(--text-primary);
-  font-weight: 300;
+  font-weight: 400;
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.5px;
   position: sticky;
   top: 0;
@@ -248,7 +248,7 @@ body {
 .table-container {
   overflow-x: auto;
   max-width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
@@ -790,14 +790,135 @@ margin: 4 0 0 0;
   font-weight: 400;
 }
 
-/* グリッドレイアウトのコンテナ */
-.result-grid {
+
+/* ▼▼▼ 新しい数値カードグリッドのスタイル ▼▼▼ */
+
+/* 上段 (4列) のグリッドコンテナ */
+.result-grid-top {
   display: grid;
-  /* 画面幅に応じて列数を自動調整 */
-  /* minmax(150px, 1fr): 各列の最小幅は150px、最大は利用可能なスペースを均等分割 */
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  /* 常に4列で表示 */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px; /* カード間の隙間 */
+  margin-bottom: 8px; /* 下段との間に少し隙間を空ける */
+}
+
+/* 下段 (7列) のグリッドコンテナ */
+.result-grid-bottom {
+  display: grid;
+  /* 常に7列で表示 */
+  grid-template-columns: repeat(7, 1fr);
   gap: 8px; /* カード間の隙間 */
 }
+
+/* カード自体のスタイル (既存のものを流用・確認) */
+.result-card {
+  background-color: var(--bg-card); /* 背景色 */
+  border-radius: 4px;              /* 角丸 */
+  padding: 10px 12px;              /* 内側の余白 */
+  text-align: center;              /* 文字中央揃え */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* 軽い影 */
+  min-height: 40px; /* カードの高さをある程度揃える */
+  display: flex; /* ラベルと値を縦に並べるため */
+  flex-direction: column;
+  justify-content: center; /* 上下中央揃え */
+}
+
+/* カード内のラベル（指標名）(既存のものを流用・確認) */
+.result-card .label {
+  font-size: 11px;            /* 少し小さく */
+  color: var(--text-secondary); /* 薄い色 */
+  text-transform: uppercase;  /* 大文字に */
+  margin-bottom: 4px;         /* 値との間の余白 */
+  line-height: 1.3;
+  font-weight: 300;
+}
+
+/* カード内の値（数値）(既存のものを流用・確認) */
+.result-card .value {
+  font-size: 22px;            /* 少し大きく */
+  color: var(--text-primary);   /* 白文字 */
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+/* ▼▼▼ レスポンシブ対応（画面幅が狭い場合） ▼▼▼ */
+/* 例: 画面幅が 992px 以下の場合 */
+@media (max-width: 992px) {
+  .result-grid-top {
+    /* 2列にする */
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .result-grid-bottom {
+     /* 画面幅に応じて自動で折り返す (最小120px程度) */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+/* 例: 画面幅が 768px 以下の場合 */
+@media (max-width: 768px) {
+   .result-grid-top {
+     /* 画面幅に応じて自動で折り返す (最小120px程度) */
+     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+   }
+   /* .result-grid-bottom は上の設定 (auto-fit) が効いているのでそのままでもOK */
+}
+
+/* 例: 画面幅が 480px 以下の場合 (さらに狭い場合) */
+@media (max-width: 480px) {
+  .result-grid-top,
+  .result-grid-bottom {
+    /* 1列にする */
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ▲▲▲ ここまで新しい数値カードグリッドのスタイル ▲▲▲ */
+
+/* ▼▼▼ 上段・下段カードの文字スタイル調整 ▼▼▼ */
+
+/* --- 上段カードのスタイル調整 --- */
+/* 上段の「数値」を少し大きく、太くする */
+.result-grid-top .result-card .value {
+  font-size: 32px; /* 例: 現在の 22px より大きく */
+  font-weight: 300; /* 例: 現在の 400 より太く */
+}
+
+/* 上段の「ラベル」も少し目立たせる (任意) */
+.result-grid-top .result-card .label {
+  font-size: 14px; /* 例: 現在の 11px より少し大きく */
+  /* font-weight: 400; */ /* 必要なら太さも調整 */
+}
+
+/* --- 下段カードのスタイル調整 (現状維持または少し控えめに) --- */
+/* 下段の「数値」は現在のスタイルを維持 (変更しない場合はこのブロック不要) */
+.result-grid-bottom .result-card .value {
+  font-size: 22px; /* 現在のデフォルト値 */
+  font-weight: 300; /* 現在のデフォルト値 */
+}
+
+/* 下段の「ラベル」も現在のスタイルを維持 (変更しない場合はこのブロック不要) */
+.result-grid-bottom .result-card .label {
+  font-size: 10px; /* 現在のデフォルト値 */
+  font-weight: 300; /* 現在のデフォルト値 */
+}
+
+/* ▲▲▲ ここまで文字スタイル調整 ▲▲▲ */
+
+/* ▼▼▼ 上段カードの背景色調整（少し明るい色を試す） ▼▼▼ */
+
+.result-grid-top .result-card {
+  /* background-color: var(--bg-card); */ /* 元の色はコメントアウト */
+  background-color: #1a2234; /* テーブルヘッダーの色を試す */
+  /* background-color: #1e2533; */ /* ボーダーの色を試す */
+  /* ↑ どちらか、または別の色コードを指定してください */
+
+  /* 枠線オプション (必要ならコメント解除) */
+  /* border: 1px solid var(--accent-color); */
+  /* border-left: 3px solid var(--accent-color); */
+}
+
+/* ▲▲▲ ここまで背景色調整 ▲▲▲ */
+
 
 /* 各数値カードのスタイル */
 .result-card {
@@ -877,4 +998,102 @@ padding-bottom: 15px;
   /* 例: color: #e2e8f0; (少し明るい白) */
   /* 例: margin-bottom: 30px; (下の余白を増やす) */
 }
+
+
+/* ▼▼▼ メイン/サブメトリクスカードのスタイル調整 ▼▼▼ */
+
+/* --- 上段3つのカード (メインメトリクス) --- */
+
+/* 上段カード自体の高さ調整 */
+.metric-row .metric-card {
+  height: 85px; /* 例: 85px に変更 (お好みで調整) */
+}
+
+/* 上段カード内の「数値」を大きく、太く */
+.metric-row .metric-card .metric {
+  font-size: 36px;  /* 例: 36px (お好みで調整) */
+  font-weight: 400; /* 例: 500 (標準より少し太め) (お好みで調整) */
+}
+
+/* 上段カード内の「ラベル」を大きく、太く */
+.metric-row .metric-card .metric-label {
+  font-size: 15px;  /* 例: 15px (お好みで調整) */
+  font-weight: 300; /* 例: 400 (標準の太さ) (お好みで調整) */
+}
+
+/* 上段カード間の隙間 */
+.metric-row {
+  gap: 10px; /* 例: 18px (お好みで調整) */
+}
+
+
+/* --- 下段5つのカード (サブメトリクス) --- */
+
+/* 下段カード自体の高さ調整 */
+.detailed-metrics .metric-card {
+  height: 65px; /* 例: 65px に変更 (お好みで調整) */
+}
+
+/* 下段カード内の「数値」を小さく、細く */
+.detailed-metrics .metric-card .metric {
+  font-size: 28px;  /* 例: 28px (お好みで調整) */
+  font-weight: 300; /* 例: 300 (細め) (お好みで調整) */
+}
+
+/* 下段カード内の「ラベル」を小さく、細く */
+.detailed-metrics .metric-card .metric-label {
+  font-size: 13px;  /* 例: 13px (お好みで調整) */
+  font-weight: 300; /* 例: 300 (細め) (お好みで調整) */
+}
+
+/* 下段カード間の隙間 */
+.detailed-metrics {
+  gap: 10px; /* 例: 8px (お好みで調整) */
+}
+
+/* ▲▲▲ ここまでメトリクスカード調整 ▲▲▲ */
+
+
+/* ▼▼▼ 詳細分析テーブル ヘッダー行のスタイル調整 ▼▼▼ */
+
+.detailed-analysis-section .data-table th {
+  background-color: #1e2533; /* 例: 少し濃いめの背景色 (お好みで変更) */
+  c/* olor: var(--accent-color);   /* 例: アクセントカラーの文字色 (お好みで変更) */
+  font-size: 12px;            /* 例: 文字サイズを 13px に (お好みで調整) */
+  font-weight: 400;           /* 例: 文字の太さを 500 (少し太め) に (お好みで調整) */
+  padding-top: 6px;          /* 例: 上下のパディングを 10px に (行の高さ調整) */
+  padding-bottom: 6px;         /* 例: 上下のパディングを 10px に (行の高さ調整) */
+  /* text-align は下の個別指定で上書きされるので、ここでは不要かも */
+  text-transform: none;       /* 例: 大文字変換を解除 (必要なら uppercase) */
+  letter-spacing: 0.3px;      /* 例: 文字間隔を少し調整 (お好みで) */
+  border-bottom: 2px solid var(--accent-color); /* 例: 下線をアクセントカラーで太めに */
+  /* 左右のパディングは既存のルール (.data-table th, td) を継承します */
+}
+
+/* (特定の列だけ文字揃えを変えたい場合の例 - 既存のルールと重複する可能性があるので確認) */
+/* 既存のルールで text-align が !important で指定されていなければ、こちらで上書き可能 */
+/* 1列目(指標名)と5列目(アドバイス)を左揃えにする */
+.detailed-analysis-section .data-table th:nth-child(1),
+.detailed-analysis-section .data-table td:nth-child(1) {
+  width: 20%;
+  text-align: left !important;
+  overflow-wrap: break-word;
+  word-break: break-all;
+
+  /* ▼▼▼ ここからフォント調整の例を追加 ▼▼▼ */
+  font-size: 14px;    /* 例: 現在の基本サイズ(14px?)より少し大きく */
+  font-weight: 400;   /* 例: 現在の基本の太さ(300?)より少し太く */
+  /* color: #e2e8f0; */ /* 例: 少し明るい白にする場合など */
+
+/* 2,3,4列目を右揃えにする */
+.detailed-analysis-section .data-table th:nth-child(2),
+.detailed-analysis-section .data-table th:nth-child(3),
+.detailed-analysis-section .data-table th:nth-child(4) {
+  text-align: right;
+}
+
+
+
+/* ▲▲▲ ここまでヘッダー行調整 ▲▲▲ */
+
 
